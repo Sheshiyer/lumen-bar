@@ -1,0 +1,102 @@
+{
+  "probes" : [
+    {
+      "area" : "diagnostics",
+      "height" : 689.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "diagnostics",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "effects",
+      "height" : 532.84033203125,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "effects",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "eyerest",
+      "height" : 746.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "eyerest",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "height" : 1012.5,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "presets",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 152,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "hero-banner",
+      "width" : 856,
+      "x" : 264,
+      "y" : 72
+    },
+    {
+      "area" : "schedule",
+      "height" : 797.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "schedule",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "schedule",
+      "edge" : "lead",
+      "height" : 236,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "circadian-chart",
+      "width" : 856,
+      "x" : 264,
+      "y" : 240
+    },
+    {
+      "area" : "schedule",
+      "edge" : "lead",
+      "height" : 189.420166015625,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "schedule-sliders",
+      "width" : 856,
+      "x" : 264,
+      "y" : 492
+    },
+    {
+      "area" : "schedule",
+      "edge" : "lead",
+      "height" : 132,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "custom-phase-sliders",
+      "width" : 856,
+      "x" : 264,
+      "y" : 697.420166015625
+    }
+  ],
+  "window" : {
+    "height" : 760,
+    "width" : 1140
+  }
+}

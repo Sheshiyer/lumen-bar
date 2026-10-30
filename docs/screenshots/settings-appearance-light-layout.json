@@ -1,0 +1,102 @@
+{
+  "probes" : [
+    {
+      "area" : "diagnostics",
+      "height" : 689.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "diagnostics",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "diagnostics",
+      "edge" : "lead",
+      "height" : 220.420166015625,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "lut-curve-card",
+      "width" : 856,
+      "x" : 264,
+      "y" : 240
+    },
+    {
+      "area" : "diagnostics",
+      "edge" : "lead",
+      "height" : 105,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "displays-card",
+      "width" : 856,
+      "x" : 264,
+      "y" : 476.420166015625
+    },
+    {
+      "area" : "diagnostics",
+      "edge" : "lead",
+      "height" : 124,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "rea-provenance-card",
+      "width" : 759.5,
+      "x" : 264,
+      "y" : 597.420166015625
+    },
+    {
+      "area" : "effects",
+      "height" : 532.84033203125,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "effects",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "eyerest",
+      "height" : 746.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "eyerest",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "height" : 1012.5,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "presets",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 152,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "hero-banner",
+      "width" : 856,
+      "x" : 264,
+      "y" : 72
+    },
+    {
+      "area" : "schedule",
+      "height" : 797.420166015625,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "schedule",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    }
+  ],
+  "window" : {
+    "height" : 33,
+    "width" : 123
+  }
+}

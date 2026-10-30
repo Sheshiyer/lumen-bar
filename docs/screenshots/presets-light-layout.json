@@ -1,0 +1,51 @@
+{
+  "probes" : [
+    {
+      "area" : "presets",
+      "height" : 1012.5,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "presets",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 152,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "hero-banner",
+      "width" : 856,
+      "x" : 264,
+      "y" : 72
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 112.5,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "quick-sliders",
+      "width" : 856,
+      "x" : 264,
+      "y" : 240
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 676,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "presets-grid",
+      "width" : 856,
+      "x" : 264,
+      "y" : 368.5
+    }
+  ],
+  "window" : {
+    "height" : 760,
+    "width" : 1140
+  }
+}
