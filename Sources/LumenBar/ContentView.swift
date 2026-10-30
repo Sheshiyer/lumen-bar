@@ -34,17 +34,24 @@ struct ContentView: View {
             .navigationTitle(model.sidebar.title)
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    Picker("Iris Profile", selection: Binding(
+                    Picker("Protection Profile", selection: Binding(
                         get: { model.tier },
                         set: { model.selectTier($0) }
                     )) {
-                        ForEach(IrisTier.allCases) { tier in
+                        ForEach(ProtectionTier.allCases) { tier in
                             Text(tier.title).tag(tier)
                         }
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 200)
-                    .help("Switch between Iris Pro (stronger blue reduction) and Iris Standard values")
+                    .frame(width: 240)
+                    .help("Switch between LumenBar Max (stronger blue-light reduction) and LumenBar Gentle values")
+
+                    Button {
+                        model.reopenOnboarding()
+                    } label: {
+                        Label("Setup & Tour", systemImage: "sparkles.rectangle.stack")
+                    }
+                    .help("Open the 3-step Welcome & Live Display Verification Tour")
 
                     Button {
                         model.togglePause()
@@ -57,6 +64,10 @@ struct ContentView: View {
                     .help("Pause or resume all blue light and brightness changes (⌃⌥⌘P)")
                 }
             }
+        }
+        .sheet(isPresented: $model.isShowingOnboarding) {
+            OnboardingSheetView()
+                .environment(model)
         }
         .noInitialFocus()
         .onOpenURL { url in
@@ -217,6 +228,50 @@ private struct TopLiveHeroBanner: View {
                     }
                 }
             }
+
+            Divider()
+
+            // Live Display Visual Test Bar
+            VStack(alignment: .leading, spacing: Space.xs) {
+                HStack {
+                    Label("Instant Live Display Verification — Click to test real-time screen changes:", systemImage: "wand.and.stars")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(model.lastTestFeedback)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.orange)
+                        .lineLimit(1)
+                }
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Space.sm) {
+                        ForEach(VisualTestCase.allCases) { tc in
+                            let isCurrent = model.activeVisualTest == tc
+                            Button {
+                                model.runVisualVerification(tc)
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: tc.symbol)
+                                    Text(tc.title)
+                                }
+                                .font(.caption.weight(isCurrent ? .bold : .medium))
+                                .padding(.horizontal, Space.sm)
+                                .padding(.vertical, Space.xs)
+                                .background(
+                                    isCurrent ? Color.orange.opacity(0.24) : Color.primary.opacity(0.06),
+                                    in: RoundedRectangle(cornerRadius: 8)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .strokeBorder(isCurrent ? Color.orange : Color.clear, lineWidth: 2)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
         }
         .padding(Space.lg)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
@@ -263,7 +318,7 @@ private struct SimulatedMonitorPreview: View {
                         .font(.caption2.weight(.bold).monospacedDigit())
                         .foregroundStyle(fgColor)
                 }
-                Text("func applyIrisLUT() {")
+                Text("func applyLumenBarLUT() {")
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
                     .foregroundStyle(fgColor)
                 Text("  mode = .\(state.preset.rawValue)")
@@ -327,7 +382,7 @@ private struct BadgePill: View {
     }
 }
 
-// MARK: - Page 1: Presets & Modes (All 11 Iris Preset Types + Quick Manual Sliders)
+// MARK: - Page 1: Presets & Modes (All 11 Circadian Preset Types + Quick Manual Sliders)
 
 private struct PresetsAndModesPage: View {
     @Environment(AppModel.self) private var model
@@ -425,10 +480,10 @@ private struct PresetsAndModesPage: View {
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
             .gridProbe("quick-sliders", area: SidebarItem.presets.rawValue)
 
-            // All 11 Iris Preset Types Grid
+            // All 11 Circadian Preset Types Grid
             VStack(alignment: .leading, spacing: Space.md) {
                 HStack {
-                    Text("All 11 Iris Preset Types (\(model.tier.title) Profile)")
+                    Text("All 11 Circadian Preset Types (\(model.tier.title) Profile)")
                         .font(.headline)
                     Spacer()
                     Text("Click any preset to activate its Day / Night / Sleep curve & screen effects")
@@ -773,7 +828,7 @@ private struct OverlayAndEffectsPage: View {
             // 12 Color Therapy Overlay Pigments
             VStack(alignment: .leading, spacing: Space.md) {
                 HStack {
-                    Label("12 Iris Color Therapy Overlay Pigments (REA 0x10005a880)", systemImage: "paintpalette.fill")
+                    Label("12 Color Therapy Overlay Pigments (REA 0x10005a880)", systemImage: "paintpalette.fill")
                         .font(.headline)
                     Spacer()
                     Toggle("Force Overlay on All Presets (USB / DisplayLink Mode)", isOn: $model.forceOverlayOnAllModes)
@@ -1102,7 +1157,7 @@ private struct READiagnosticsPage: View {
 
             // REA Binary Provenance & Global Shortcuts Summary
             VStack(alignment: .leading, spacing: Space.md) {
-                Label("REA Reverse-Engineering Provenance (Iris.app v1.2.2 x86_64 Mach-O)", systemImage: "cpu.fill")
+                Label("REA Binary Provenance & Display Pipeline Ledger (x86_64 Mach-O)", systemImage: "cpu.fill")
                     .font(.headline)
 
                 Grid(alignment: .leading, horizontalSpacing: Space.lg, verticalSpacing: Space.xs) {

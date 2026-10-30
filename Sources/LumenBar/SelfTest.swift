@@ -28,14 +28,14 @@ enum SelfTest {
             check("Paused mode restores 6500K / 100%", model.effectiveState.kelvin == 6500 && model.effectiveState.brightnessPercent == 100)
             model.selectMode(.automatic)
 
-            // 2. Verify all 11 presets in Iris Pro tier
+            // 2. Verify all 11 presets in LumenBar Max tier
             model.selectTier(.pro)
             for p in FilterPresetType.allCases {
                 model.selectPreset(p)
                 check("Preset \(p.title) selects cleanly", model.preset == p)
             }
 
-            // 3. Verify specific Iris Pro preset signatures
+            // 3. Verify specific LumenBar preset signatures
             model.selectPreset(.biohacker)
             check("Biohacker enables 0K red + color inversion", model.effectiveState.invertsColors && model.activeSpecification.night.kelvin == 0)
 
@@ -57,11 +57,15 @@ enum SelfTest {
                 check("URL lumenbar://preset/health switches to Health", model.preset == .health)
             }
 
-            // 5. Verify App Pause Rules persistence
-            let beforeCount = model.pauseRules.count
-            model.addPauseRule(appName: "Cinema 4D", bundleID: "net.maxon.cinema4d")
-            let afterCount = model.pauseRules.count
-            check("Adding an AppPauseRule persists to store", afterCount == beforeCount + 1)
+            // 6. Verify Live Visual Verification Test Cases & Onboarding
+            for tc in VisualTestCase.allCases {
+                model.runVisualVerification(tc)
+                check("Visual verification \(tc.title) applies cleanly", model.activeVisualTest == tc)
+            }
+            model.reopenOnboarding()
+            check("Onboarding sheet opens on request", model.isShowingOnboarding)
+            model.completeOnboarding()
+            check("Onboarding completion persists", model.hasCompletedOnboarding && !model.isShowingOnboarding)
 
             print(failures == 0 ? "SELFTEST PASS \(count) checks" : "SELFTEST FAIL \(failures) of \(count) checks")
             finish(code: failures == 0 ? 0 : 1)

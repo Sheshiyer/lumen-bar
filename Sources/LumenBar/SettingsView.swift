@@ -31,20 +31,34 @@ private struct GeneralSettings: View {
     var body: some View {
         @Bindable var model = model
         Form {
-            Picker("Default Iris Profile", selection: Binding(
+            Picker("Default Protection Profile", selection: Binding(
                 get: { model.tier },
                 set: { model.selectTier($0) }
             )) {
-                ForEach(IrisTier.allCases) { tier in
+                ForEach(ProtectionTier.allCases) { tier in
                     Text(tier.title).tag(tier)
                 }
             }
+
+            Toggle("Launch LumenBar at Login", isOn: Binding(
+                get: { model.launchAtLoginEnabled },
+                set: { model.setLaunchAtLogin($0) }
+            ))
+
+            Toggle("Show Live Kelvin & Brightness in Menu Bar", isOn: $model.showMenuBarText)
+                .onChange(of: model.showMenuBarText) { _, _ in model.saveAndApply() }
 
             Toggle("Enable 3rd Automatic Transition (Sleep Phase)", isOn: $model.useSleepPhase)
                 .onChange(of: model.useSleepPhase) { _, _ in model.saveAndApply() }
 
             Toggle("20-20-20 Eye Rest Reminders", isOn: $model.restTimerEnabled)
                 .onChange(of: model.restTimerEnabled) { _, _ in model.saveAndApply() }
+
+            LabeledContent("Onboarding & Live Tour") {
+                Button("Open Welcome & Display Verification Tour…") {
+                    model.reopenOnboarding()
+                }
+            }
 
             LabeledContent("Display Engine") {
                 Text("CoreGraphics LUT + Click-Through NSWindow Overlay")
@@ -63,7 +77,7 @@ private struct ShortcutsSettings: View {
             LabeledContent("Pause / Resume Filter") {
                 Text("⌃⌥⌘P").font(.body.monospaced())
             }
-            LabeledContent("Cycle Next Iris Preset") {
+            LabeledContent("Cycle Next Circadian Preset") {
                 Text("⌃⌥⌘M").font(.body.monospaced())
             }
             LabeledContent("Color Temperature Warmer / Cooler") {

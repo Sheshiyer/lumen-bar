@@ -105,6 +105,7 @@ final class DisplayGammaEngine {
             kelvin: state.kelvin,
             brightnessPercent: state.brightnessPercent,
             inverted: state.invertsColors,
+            grayscalePaper: state.usesGrayscale,
             gammaFixer: state.gammaFixer,
             capacity: 256
         )
@@ -188,7 +189,7 @@ final class DisplayOverlayController {
             defer: false,
             screen: screen
         )
-        // Exact attributes decompiled from Iris `set_always_on_top` (0x10000b540) and `can_join_all_spaces` (0x10000b610)
+        // Exact click-through overlay attributes decompiled via REA (`0x10000b540` & `0x10000b610`)
         window.ignoresMouseEvents = true
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.overlayWindow)))
         window.isOpaque = false

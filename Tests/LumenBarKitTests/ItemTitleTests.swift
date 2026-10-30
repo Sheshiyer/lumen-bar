@@ -31,7 +31,7 @@ final class LumenBarKitTests: XCTestCase {
         XCTAssertTrue(k3450.green > k3400.green && k3450.green < KelvinLUT.rgb(forKelvin: 3500).green)
     }
 
-    func testPresetSpecificationsMatchIrisDocs() {
+    func testPresetSpecificationsMatchProfiles() {
         let healthPro = FilterPresetType.health.specification(for: .pro)
         XCTAssertEqual(healthPro.day, PhaseTarget(kelvin: 5000, brightnessPercent: 100))
         XCTAssertEqual(healthPro.night, PhaseTarget(kelvin: 3400, brightnessPercent: 80))

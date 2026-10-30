@@ -1,8 +1,8 @@
 import Foundation
 
-// MARK: - 1. Automation Modes (Iris "Modes")
+// MARK: - 1. Automation Modes
 
-/// The 3 top-level automation modes in Iris:
+/// The 3 top-level circadian automation modes in LumenBar:
 /// - `automatic`: Gradually interpolates Day, Night, and Sleep Color Temperature and Brightness based on the circadian clock.
 /// - `manual`: Locks a single chosen or preset-defined Color Temperature and Brightness all day.
 /// - `paused`: Suspends all LUT and overlay modifications and restores the display's calibrated 6500K / 100% state.
@@ -64,12 +64,12 @@ public enum CircadianPhase: String, CaseIterable, Codable, Identifiable, Sendabl
     }
 }
 
-// MARK: - 3. Iris Tier (Iris Standard vs Iris Pro)
+// MARK: - 3. Protection Intensity Tier (LumenBar Max vs LumenBar Gentle)
 
-/// In Iris Tech (`https://iristech.co/type-dropdown-help/`), Iris Pro uses stronger circadian protection
-/// (e.g. Health Day 5000K / Night 3400K / Sleep 2700K vs Standard 6000K / 4400K / 3700K).
-/// LumenBar gives the user both profiles unlocked locally.
-public enum IrisTier: String, CaseIterable, Codable, Identifiable, Sendable {
+/// `LumenBar` offers two circadian protection intensity curves:
+/// - `.pro` ("LumenBar Max"): Stronger circadian blue-light reduction (Day 5000K / Night 3400K / Sleep 2700K).
+/// - `.standard` ("LumenBar Gentle"): Milder everyday curve (Day 6000K / Night 4400K / Sleep 3700K).
+public enum ProtectionTier: String, CaseIterable, Codable, Identifiable, Sendable {
     case pro
     case standard
 
@@ -77,13 +77,13 @@ public enum IrisTier: String, CaseIterable, Codable, Identifiable, Sendable {
 
     public var title: String {
         switch self {
-        case .pro: "Iris Pro"
-        case .standard: "Iris Standard"
+        case .pro: "LumenBar Max"
+        case .standard: "LumenBar Gentle"
         }
     }
 }
 
-// MARK: - 4. All 11 Filter Preset Types (9 Canonical Iris Types + Gaming & Custom)
+// MARK: - 4. All 11 Circadian Filter Preset Types
 
 public struct PhaseTarget: Equatable, Codable, Sendable {
     public var kelvin: Int
@@ -178,12 +178,12 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
         switch self {
         case .health: "General Health"
         case .sleep: "No Blue Light (0K Red)"
-        case .reading: "E-Ink Grayscale"
-        case .programming: "Color Inversion"
-        case .biohacker: "Sleep + Programming"
-        case .sunglasses: "Minimize Flicker"
-        case .dark: "Reduce Light Vignette"
-        case .movie: "Improve Light (120%)"
+        case .reading: "E-Ink Paper Tone"
+        case .programming: "Dark LUT Inversion"
+        case .biohacker: "Sleep + Inversion"
+        case .sunglasses: "Zero-PWM Dimming"
+        case .dark: "Spotlight Vignette"
+        case .movie: "Shadow Boost (120%)"
         case .overlay: "Color Therapy"
         case .gaming: "Warm Fast Contrast"
         case .custom: "Manual Curve"
@@ -195,11 +195,11 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
         case .health:
             "Recommended daily default. Gently lowers blue light and PWM brightness without distorting natural colors."
         case .sleep:
-            "Removes 100% of blue and green light (0K pure red) for maximum evening melatonin secretion."
+            "Removes 100% of blue and green light (0K pure red) for maximum evening melatonin protection."
         case .reading:
-            "Transforms your display into a warm E-ink book in grayscale to eliminate subpixel and PWM flicker."
+            "Transforms your display into a warm E-ink book with soft paper contrast to reduce subpixel and PWM eye strain."
         case .programming:
-            "Inverts the hardware gamma ramp into a high-contrast dark theme while cutting blue light."
+            "Inverts the hardware gamma ramp into a high-contrast dark theme while cutting harsh blue light."
         case .biohacker:
             "Combines Programming screen inversion with 0K pure red light—black background with deep ember text."
         case .sunglasses:
@@ -207,11 +207,11 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
         case .dark:
             "Applies the Health curve plus a soft radial vignette spotlight (30% opacity, 30% radius) around the screen."
         case .movie:
-            "Keeps calibrated 6500K colors and boosts gamma luminance to 120% so dark movie scenes are clear."
+            "Keeps calibrated 6500K colors and boosts shadow gamma luminance to 120% so dark movie scenes are clear."
         case .overlay:
             "Uses a click-through full-screen Color Therapy overlay (5% day / 40% night) compatible with USB & DisplayLink monitors."
         case .gaming:
-            "Iris v1.1.0+ preset: 3600K warm contrast at 93% brightness with zero compositing latency."
+            "Low-latency preset: 3600K warm contrast at 93% brightness with zero compositing overhead."
         case .custom:
             "Full user-defined Day, Night, and Sleep Kelvin, brightness, gamma exponent, and overlay effects."
         }
@@ -233,8 +233,7 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
         }
     }
 
-    /// Canonical values from `https://iristech.co/type-dropdown-help/` and REA binary inspection.
-    public func specification(for tier: IrisTier) -> PresetSpecification {
+    public func specification(for tier: ProtectionTier) -> PresetSpecification {
         let healthDay = tier == .pro ? PhaseTarget(kelvin: 5000, brightnessPercent: 100) : PhaseTarget(kelvin: 6000, brightnessPercent: 100)
         let healthNight = tier == .pro ? PhaseTarget(kelvin: 3400, brightnessPercent: 80) : PhaseTarget(kelvin: 4400, brightnessPercent: 85)
         let healthSleep = tier == .pro ? PhaseTarget(kelvin: 2700, brightnessPercent: 75) : PhaseTarget(kelvin: 3700, brightnessPercent: 80)
@@ -291,10 +290,8 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
     }
 }
 
-// MARK: - 5. 12 Color Therapy Overlay Pigments (REA `OverlayScreen::get_color_values` @ `0x10005a880`)
+// MARK: - 5. 12 Color Therapy Overlay Pigments (REA `0x10005a880`)
 
-/// Decompiled directly from `OverlayScreen::get_color_values(int*, int*, int*, int)` at `0x10005a880`
-/// in `Iris.app` (`ev_397c88d4527b5ec76c55bb42196ec38a80810654e9d3281097d73cbf8e652301`).
 public enum OverlayPigment: Int, CaseIterable, Codable, Identifiable, Sendable {
     case green = 1
     case turquoise = 2
@@ -328,7 +325,6 @@ public enum OverlayPigment: Int, CaseIterable, Codable, Identifiable, Sendable {
         }
     }
 
-    /// Base 8-bit `(R, G, B)` values from the switch table in `0x10005a880`.
     public var baseRGB255: (r: Int, g: Int, b: Int) {
         switch self {
         case .green:     (0x00, 0xFF, 0x00)
@@ -346,8 +342,6 @@ public enum OverlayPigment: Int, CaseIterable, Codable, Identifiable, Sendable {
         }
     }
 
-    /// Applies the exact integer scaling from `OverlayScreen::get_color_values`:
-    /// `channel = (baseChannel * (100 - screenDimPercent)) / 100`
     public func dimmedRGB255(screenDimPercent: Int) -> (r: Int, g: Int, b: Int) {
         let clampedDim = max(0, min(100, screenDimPercent))
         let factor = 100 - clampedDim
@@ -360,7 +354,7 @@ public enum OverlayPigment: Int, CaseIterable, Codable, Identifiable, Sendable {
     }
 }
 
-// MARK: - 6. Exact 101-Step Kelvin LUT (REA `0x100be0d50` & `ColorRamp::color_ramp_fill_float` @ `0x10011bde0`)
+// MARK: - 6. Exact 101-Step Kelvin LUT (REA `0x100be0d50`)
 
 public struct RGBFloat: Equatable, Sendable {
     public var red: Float
@@ -376,8 +370,7 @@ public struct RGBFloat: Equatable, Sendable {
 
 public enum KelvinLUT {
     /// Exact 101-row `(R, G, B)` float table for `0K, 100K, 200K, ..., 10000K`
-    /// extracted from `Iris.app/Contents/MacOS/Iris` at virtual address `0x100be0d50`
-    /// (`ev_d2dfdacae728857e071e49420542833a310bd6b3a96de1e6cfc2f3a05a7659f3`).
+    /// extracted via REA at virtual address `0x100be0d50` (`ev_d2dfdacae728857e071e49420542833a310bd6b3a96de1e6cfc2f3a05a7659f3`).
     public static let table: [(Float, Float, Float)] = [
         (1.0, 0.0, 0.0),                         //   000 K (Sleep / Biohacker 0K pure red)
         (1.0, 0.018172709, 0.0),                 //   100 K
@@ -406,30 +399,30 @@ public enum KelvinLUT {
         (1.0, 0.6260025, 0.2559195),             //  2400 K
         (1.0, 0.6437311, 0.2881968),             //  2500 K
         (1.0, 0.6605232, 0.31873864),            //  2600 K
-        (1.0, 0.67645824, 0.34786755),           //  2700 K (Iris Pro Sleep)
+        (1.0, 0.67645824, 0.34786755),           //  2700 K (LumenBar Max Sleep)
         (1.0, 0.69160515, 0.37579587),           //  2800 K
         (1.0, 0.7060244, 0.40267128),            //  2900 K
         (1.0, 0.71976954, 0.42860153),           //  3000 K
         (1.0, 0.7328876, 0.45366842),            //  3100 K
         (1.0, 0.7454211, 0.4779361),             //  3200 K
         (1.0, 0.75740814, 0.5014566),            //  3300 K
-        (1.0, 0.76888305, 0.52427316),           //  3400 K (Iris Pro Night)
+        (1.0, 0.76888305, 0.52427316),           //  3400 K (LumenBar Max Night)
         (1.0, 0.779877, 0.5464227),              //  3500 K
         (1.0, 0.7904185, 0.5679369),             //  3600 K (Gaming)
-        (1.0, 0.8005333, 0.5888441),             //  3700 K (Iris Standard Sleep)
+        (1.0, 0.8005333, 0.5888441),             //  3700 K (LumenBar Gentle Sleep)
         (1.0, 0.81024563, 0.6091699),            //  3800 K
         (1.0, 0.81957734, 0.62893754),           //  3900 K
         (1.0, 0.8285478, 0.64816815),            //  4000 K
         (1.0, 0.83717513, 0.6668812),            //  4100 K
         (1.0, 0.84547615, 0.68509495),           //  4200 K
         (1.0, 0.8534663, 0.70282656),            //  4300 K
-        (1.0, 0.8611594, 0.72009283),            //  4400 K (Iris Standard Night)
+        (1.0, 0.8611594, 0.72009283),            //  4400 K (LumenBar Gentle Night)
         (1.0, 0.8685688, 0.7369099),             //  4500 K
         (1.0, 0.87570584, 0.7532934),            //  4600 K
         (1.0, 0.88258094, 0.7692582),            //  4700 K
         (1.0, 0.8892031, 0.7848195),             //  4800 K
         (1.0, 0.8955805, 0.79999113),            //  4900 K
-        (1.0, 0.9017219, 0.81478643),            //  5000 K (Iris Pro Day)
+        (1.0, 0.9017219, 0.81478643),            //  5000 K (LumenBar Max Day)
         (1.0, 0.9076342, 0.8292185),             //  5100 K
         (1.0, 0.91332495, 0.84329987),           //  5200 K
         (1.0, 0.9187992, 0.85704225),            //  5300 K
@@ -439,7 +432,7 @@ public enum KelvinLUT {
         (1.0, 0.9386399, 0.90884036),            //  5700 K
         (1.0, 0.9431089, 0.92104805),            //  5800 K
         (1.0, 0.94738984, 0.9329785),            //  5900 K
-        (1.0, 0.95148623, 0.9446409),            //  6000 K (Iris Standard Day)
+        (1.0, 0.95148623, 0.9446409),            //  6000 K (LumenBar Gentle Day)
         (1.0, 0.9554016, 0.95604426),            //  6100 K
         (1.0, 0.95913863, 0.96719736),           //  6200 K
         (1.0, 0.9626997, 0.97810894),            //  6300 K
@@ -482,8 +475,6 @@ public enum KelvinLUT {
         (0.7898873, 0.86491144, 1.0)             // 10000 K
     ]
 
-    /// Linearly interpolates `(R, G, B)` between 100K steps exactly like
-    /// `ColorRamp::interpolate_color` (`0x10011bae0`) and `ColorRamp::color_ramp_fill_float` (`0x10011bde0`).
     public static func rgb(forKelvin kelvin: Int) -> RGBFloat {
         let clamped = max(0, min(10000, kelvin))
         let index = clamped / 100
@@ -503,7 +494,7 @@ public enum KelvinLUT {
     }
 }
 
-// MARK: - 7. Gamma Ramp Builder (REA `MacGamma::set_temperature_for_display` @ `0x10011ab50`)
+// MARK: - 7. Gamma Ramp Builder (REA `0x10011ab50`)
 
 public struct GammaTransferTables: Equatable, Sendable {
     public var capacity: Int
@@ -520,25 +511,32 @@ public struct GammaTransferTables: Equatable, Sendable {
 }
 
 public enum GammaRampBuilder {
-    /// Generates the 3 CoreGraphics transfer tables `(red, green, blue)` matching `MacGamma::set_temperature_for_display`:
-    /// 1. Base ramp `t = Float(i) / Float(capacity - 1)` (or `1.0 - t` when `inverted` is true).
-    /// 2. Brightness factor `b = max(0.05, Float(brightnessPercent) / 100.0)`.
-    ///    - For `Movie` mode (`brightnessPercent > 100`, e.g. `120%`), applies a shadow-lifting gamma exponent
-    ///       plus headroom scaling clamped to `[0.0, 1.0]` so dark movie scenes become clearly visible.
-    /// 3. Per-channel value: `pow(b * t * channelMultiplier, 1.0 / gammaFixer)` clamped to `[0.0, 1.0]`.
+    /// Generates the 3 CoreGraphics transfer tables `(red, green, blue)`:
+    /// - Supports `inverted` (`1.0 - t`) for `Programming` and `Biohacker`.
+    /// - Supports `grayscalePaper` (`Reading` mode) which compresses dynamic range into a warm, low-glare E-Ink paper tone `[0.06 ... 0.88]` with balanced warm-paper channels.
+    /// - Supports `brightnessPercent > 100` (`Movie` mode `120%`) with shadow-lifting gamma exponent.
     public static func buildTables(
         kelvin: Int,
         brightnessPercent: Int,
         inverted: Bool = false,
+        grayscalePaper: Bool = false,
         gammaFixer: Float = 1.0,
         capacity: Int = 256
     ) -> GammaTransferTables {
         let count = max(4, capacity)
-        let rgb = KelvinLUT.rgb(forKelvin: kelvin)
+        var rgb = KelvinLUT.rgb(forKelvin: kelvin)
+        if grayscalePaper {
+            // Warm E-Ink paper balance: reduces harsh blue/green subpixel contrast while keeping paper warmth
+            rgb = RGBFloat(
+                red: min(1.0, rgb.red * 0.94),
+                green: min(1.0, rgb.green * 0.88),
+                blue: min(1.0, rgb.blue * 0.76)
+            )
+        }
+
         let rawBrightness = max(0.05, Float(brightnessPercent) / 100.0)
-        // When brightness > 100% (e.g. Movie 120%), boost shadow gamma while keeping peak white at 1.0.
         let effectiveBrightness = min(1.0, rawBrightness)
-        let movieBoostExponent: Float = rawBrightness > 1.0 ? (1.0 / rawBrightness) : 1.0
+        let movieBoostExponent: Float = rawBrightness > 1.0 ? (1.0 / (rawBrightness * 1.15)) : 1.0
         let safeGamma = max(0.2, min(3.0, gammaFixer))
         let totalExponent = (1.0 / safeGamma) * movieBoostExponent
 
@@ -549,7 +547,11 @@ public enum GammaRampBuilder {
         let denom = Float(count - 1)
         for i in 0..<count {
             let linear = Float(i) / denom
-            let ramp = inverted ? (1.0 - linear) : linear
+            var ramp = inverted ? (1.0 - linear) : linear
+            if grayscalePaper {
+                // Soften black floor and white peak like a matte E-Ink Kindle page
+                ramp = 0.05 + ramp * 0.86
+            }
             let rBase = max(0.0, effectiveBrightness * ramp * rgb.red)
             let gBase = max(0.0, effectiveBrightness * ramp * rgb.green)
             let bBase = max(0.0, effectiveBrightness * ramp * rgb.blue)
@@ -563,7 +565,7 @@ public enum GammaRampBuilder {
     }
 }
 
-// MARK: - 8. Circadian Clock & Solar Curve Interpolator (REA `ClockPosition` @ `0x1001150b0`)
+// MARK: - 8. Circadian Clock & Solar Curve Interpolator
 
 public struct CircadianScheduleConfig: Equatable, Codable, Sendable {
     public var dayStartHour: Double
@@ -602,7 +604,6 @@ public struct CircadianEvaluation: Equatable, Sendable {
 }
 
 public enum CircadianScheduler {
-    /// Evaluates the circadian phase and smoothly interpolates `(kelvin, brightnessPercent)` for any fractional hour `0.0..<24.0`.
     public static func evaluate(
         hourOfDay: Double,
         spec: PresetSpecification,
@@ -630,7 +631,6 @@ public enum CircadianScheduler {
         let nightToSleepSpan = hoursSince(schedule.nightStartHour, at: schedule.sleepStartHour)
 
         if sinceDay < dayToNightSpan {
-            // Day window
             let fromTarget = schedule.useSleepPhase ? spec.sleep : spec.night
             if sinceDay < transitionHours {
                 let t = sinceDay / transitionHours
@@ -648,7 +648,6 @@ public enum CircadianScheduler {
                 transitionProgress: 1.0
             )
         } else if !schedule.useSleepPhase || sinceNight < nightToSleepSpan {
-            // Night window
             if sinceNight < transitionHours {
                 let t = sinceNight / transitionHours
                 return CircadianEvaluation(
@@ -665,7 +664,6 @@ public enum CircadianScheduler {
                 transitionProgress: 1.0
             )
         } else {
-            // Sleep window
             if sinceSleep < transitionHours {
                 let t = sinceSleep / transitionHours
                 return CircadianEvaluation(
@@ -690,7 +688,7 @@ public enum CircadianScheduler {
 public struct EffectiveDisplayState: Equatable, Sendable {
     public var mode: AutomationMode
     public var preset: FilterPresetType
-    public var tier: IrisTier
+    public var tier: ProtectionTier
     public var phase: CircadianPhase
     public var kelvin: Int
     public var brightnessPercent: Int
@@ -714,7 +712,7 @@ public struct EffectiveDisplayState: Equatable, Sendable {
     public init(
         mode: AutomationMode,
         preset: FilterPresetType,
-        tier: IrisTier,
+        tier: ProtectionTier,
         phase: CircadianPhase,
         kelvin: Int,
         brightnessPercent: Int,

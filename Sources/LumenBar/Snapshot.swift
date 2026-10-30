@@ -38,6 +38,17 @@ enum Snapshot {
                     capture(to: "\(dir)/\(page.rawValue)-\(mode).png")
                 }
             }
+            if only == nil || only?.contains("onboarding") == true {
+                for mode in ["light", "dark"] {
+                    NSApp.appearance = NSAppearance(named: mode == "light" ? .aqua : .darkAqua)
+                    model.sidebar = .presets
+                    model.reopenOnboarding()
+                    try? await Task.sleep(for: .seconds(0.8))
+                    capture(to: "\(dir)/onboarding-\(mode).png")
+                    model.completeOnboarding()
+                    try? await Task.sleep(for: .seconds(0.4))
+                }
+            }
             if only == nil || only?.contains("settings") == true {
                 let main = NSApp.windows.first { $0.canBecomeMain && !$0.isSheet }
                 openSettings()

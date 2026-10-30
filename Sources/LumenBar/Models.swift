@@ -2,6 +2,7 @@ import AppKit
 import Foundation
 import LumenBarKit
 import Observation
+import ServiceManagement
 import SwiftUI
 
 // MARK: - 1. Persistent Data Models
@@ -9,7 +10,7 @@ import SwiftUI
 struct SavedFilterState: Codable, Equatable {
     var modeRaw: String = AutomationMode.automatic.rawValue
     var presetRaw: String = FilterPresetType.health.rawValue
-    var tierRaw: String = IrisTier.pro.rawValue
+    var tierRaw: String = ProtectionTier.pro.rawValue
     var manualKelvin: Int = 3400
     var manualBrightness: Int = 80
     var customDayKelvin: Int = 5000
@@ -34,6 +35,9 @@ struct SavedFilterState: Codable, Equatable {
     var restTimerEnabled: Bool = true
     var restWorkMinutes: Int = 20
     var restBreakSeconds: Int = 20
+    var hasCompletedOnboarding: Bool = false
+    var launchAtLoginEnabled: Bool = false
+    var showMenuBarText: Bool = true
     var updatedAt: Date = .now
 }
 
@@ -90,7 +94,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .presets: "All 3 modes & 11 Iris presets"
+        case .presets: "All 3 modes & 11 circadian presets"
         case .schedule: "Day, Night & Sleep circadian curve"
         case .effects: "12 Color Therapy tints & vignette"
         case .eyerest: "20-20-20 timer & app auto-pause"
@@ -117,7 +121,45 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-// MARK: - 3. Main Application Model
+// MARK: - 3. Live Visual Verification Preset
+
+enum VisualTestCase: String, CaseIterable, Identifiable {
+    case healthWarm
+    case sleepZeroRed
+    case readingEInk
+    case biohackerInvert
+    case darkVignette
+    case movieBoost
+    case calibratedNeutral
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .healthWarm: "Health (3400K)"
+        case .sleepZeroRed: "Sleep (0K Red)"
+        case .readingEInk: "Reading (E-Ink)"
+        case .biohackerInvert: "Biohacker (Invert+0K)"
+        case .darkVignette: "Dark (Vignette)"
+        case .movieBoost: "Movie (120%)"
+        case .calibratedNeutral: "Calibrated (6500K)"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .healthWarm: "heart.text.square.fill"
+        case .sleepZeroRed: "moon.zzz.fill"
+        case .readingEInk: "book.pages.fill"
+        case .biohackerInvert: "bolt.heart.fill"
+        case .darkVignette: "circle.dashed.inset.filled"
+        case .movieBoost: "film.stack.fill"
+        case .calibratedNeutral: "checkmark.seal.fill"
+        }
+    }
+}
+
+// MARK: - 4. Main Application Model
 
 @Observable
 final class AppModel {
@@ -125,10 +167,10 @@ final class AppModel {
     var sidebar: SidebarItem = .presets
     var settingsTab: SettingsTab = .general
 
-    // Core Iris Mode & Type State
+    // Core Circadian Mode & Preset State
     var mode: AutomationMode = .automatic
     var preset: FilterPresetType = .health
-    var tier: IrisTier = .pro
+    var tier: ProtectionTier = .pro
 
     // Manual & Custom Targets
     var manualKelvin: Int = 3400
@@ -172,6 +214,15 @@ final class AppModel {
     var pausingAppName: String? = nil
     var pauseRules: [AppPauseRule] = []
 
+    // Onboarding & System Preferences
+    var hasCompletedOnboarding: Bool = false
+    var isShowingOnboarding: Bool = false
+    var onboardingStep: Int = 0
+    var launchAtLoginEnabled: Bool = false
+    var showMenuBarText: Bool = true
+    var activeVisualTest: VisualTestCase? = nil
+    var lastTestFeedback: String = "Click any live test button below to verify real-time hardware gamma & overlay rendering on your display."
+
     // New App Pause Rule Sheet/Form
     var newRuleAppName: String = ""
     var newRuleBundleID: String = ""
@@ -181,6 +232,13 @@ final class AppModel {
     init(storeURL: URL = Store.url) {
         self.storeURL = storeURL
         loadOrSeedStore()
+        // Show onboarding on first interactive launch (skip during automated snapshots/selftests unless requested)
+        let env = ProcessInfo.processInfo.environment
+        if env["APP_ONBOARDING"] == "1" {
+            isShowingOnboarding = true
+        } else if env["APP_SNAPSHOT"] == nil && !CommandLine.arguments.contains("--selftest") && !hasCompletedOnboarding {
+            isShowingOnboarding = true
+        }
         applyCurrentDisplayState()
         setupSystemHooks()
     }
@@ -295,6 +353,7 @@ final class AppModel {
     }
 
     var menuBarLabelText: String {
+        guard showMenuBarText else { return "" }
         let st = effectiveState
         if st.isEffectivelyPaused {
             return "Paused"
@@ -316,18 +375,94 @@ final class AppModel {
 
     func selectPreset(_ newPreset: FilterPresetType) {
         preset = newPreset
+        overrideInvertColors = false
+        overrideGrayscale = false
         let spec = newPreset.specification(for: tier)
         manualKelvin = spec.night.kelvin
         manualBrightness = spec.night.brightnessPercent
         saveAndApply()
     }
 
-    func selectTier(_ newTier: IrisTier) {
+    func selectTier(_ newTier: ProtectionTier) {
         tier = newTier
         let spec = preset.specification(for: newTier)
         if mode == .manual {
             manualKelvin = spec.night.kelvin
             manualBrightness = spec.night.brightnessPercent
+        }
+        saveAndApply()
+    }
+
+    /// Runs an immediate visual verification test on the physical display so the user can see the exact LUT/overlay change.
+    func runVisualVerification(_ testCase: VisualTestCase) {
+        activeVisualTest = testCase
+        overrideInvertColors = false
+        overrideGrayscale = false
+        forceOverlayOnAllModes = false
+
+        switch testCase {
+        case .healthWarm:
+            mode = .manual
+            preset = .health
+            manualKelvin = 3400
+            manualBrightness = 80
+            lastTestFeedback = "Applied Health Night (3400K · 80% brightness) via CoreGraphics LUT."
+        case .sleepZeroRed:
+            mode = .manual
+            preset = .sleep
+            manualKelvin = 0
+            manualBrightness = 80
+            lastTestFeedback = "Applied Sleep 0K Pure Red (100% blue & green light removed)."
+        case .readingEInk:
+            mode = .manual
+            preset = .reading
+            manualKelvin = 3400
+            manualBrightness = 85
+            lastTestFeedback = "Applied Reading Mode (Warm 3400K + E-Ink Grayscale desaturation)."
+        case .biohackerInvert:
+            mode = .manual
+            preset = .biohacker
+            manualKelvin = 0
+            manualBrightness = 85
+            lastTestFeedback = "Applied Biohacker Mode (Inverted Gamma Ramp 1.0 - t + 0K Red)."
+        case .darkVignette:
+            mode = .manual
+            preset = .dark
+            manualKelvin = 3400
+            manualBrightness = 85
+            lastTestFeedback = "Applied Dark Spotlight Vignette (30% corner opacity + 3400K warm filter)."
+        case .movieBoost:
+            mode = .manual
+            preset = .movie
+            manualKelvin = 6500
+            manualBrightness = 120
+            lastTestFeedback = "Applied Movie Mode (Calibrated 6500K + 120% shadow-lifting gamma boost)."
+        case .calibratedNeutral:
+            mode = .paused
+            lastTestFeedback = "Restored native macOS ColorSync calibration (6500K · 100%)."
+        }
+        saveAndApply()
+    }
+
+    func completeOnboarding() {
+        hasCompletedOnboarding = true
+        isShowingOnboarding = false
+        saveAndApply()
+    }
+
+    func reopenOnboarding() {
+        onboardingStep = 0
+        isShowingOnboarding = true
+    }
+
+    func setLaunchAtLogin(_ enabled: Bool) {
+        launchAtLoginEnabled = enabled
+        if !DisplayGammaEngine.shared.isSimulationMode {
+            if enabled {
+                try? SMAppService.mainApp.register()
+            } else {
+                try? SMAppService.mainApp.unregister()
+            }
         }
         saveAndApply()
     }
@@ -412,6 +547,12 @@ final class AppModel {
         switch host {
         case "toggle-pause":
             togglePause()
+        case "onboarding":
+            reopenOnboarding()
+        case "test":
+            if let tc = VisualTestCase(rawValue: pathPart) {
+                runVisualVerification(tc)
+            }
         case "mode":
             if let m = AutomationMode(rawValue: pathPart) {
                 selectMode(m)
@@ -456,6 +597,9 @@ final class AppModel {
             restTimerEnabled: restTimerEnabled,
             restWorkMinutes: restWorkMinutes,
             restBreakSeconds: restBreakSeconds,
+            hasCompletedOnboarding: hasCompletedOnboarding,
+            launchAtLoginEnabled: launchAtLoginEnabled,
+            showMenuBarText: showMenuBarText,
             updatedAt: .now
         )
         let payload = PersistentStorePayload(state: state, pauseRules: pauseRules)
@@ -477,7 +621,7 @@ final class AppModel {
             let saved = payload.state
             mode = AutomationMode(rawValue: saved.modeRaw) ?? .automatic
             preset = FilterPresetType(rawValue: saved.presetRaw) ?? .health
-            tier = IrisTier(rawValue: saved.tierRaw) ?? .pro
+            tier = ProtectionTier(rawValue: saved.tierRaw) ?? .pro
             manualKelvin = saved.manualKelvin
             manualBrightness = saved.manualBrightness
             customDayKelvin = saved.customDayKelvin
@@ -502,6 +646,9 @@ final class AppModel {
             restTimerEnabled = saved.restTimerEnabled
             restWorkMinutes = saved.restWorkMinutes
             restBreakSeconds = saved.restBreakSeconds
+            hasCompletedOnboarding = saved.hasCompletedOnboarding
+            launchAtLoginEnabled = saved.launchAtLoginEnabled
+            showMenuBarText = saved.showMenuBarText
             remainingWorkSeconds = max(1, saved.restWorkMinutes) * 60
             pauseRules = payload.pauseRules
         } else {

@@ -37,7 +37,7 @@ struct LumenBarApp: App {
                 }
                 .keyboardShortcut("m", modifiers: [.control, .option, .command])
             }
-            CommandMenu("Iris Presets") {
+            CommandMenu("Circadian Presets") {
                 ForEach(FilterPresetType.allCases) { p in
                     Button("\(p.title) — \(p.specialty)") {
                         model.selectPreset(p)
@@ -168,7 +168,7 @@ private struct MenuBarPopoverView: View {
 
             Divider()
 
-            Text("Quick Iris Presets")
+            Text("Quick Circadian Presets")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
 
