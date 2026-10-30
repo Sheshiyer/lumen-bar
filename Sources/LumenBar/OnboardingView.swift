@@ -11,24 +11,18 @@ struct OnboardingSheetView: View {
             // Header
             HStack(spacing: Space.md) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: 0x1C1438), Color(hex: 0x6B243E), Color(hex: 0xF5701C)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
+                    RoundedRectangle(cornerRadius: LumenRadius.lg, style: .continuous)
+                        .fill(LumenSemantic.selectionMutedFill)
                         .frame(width: 56, height: 56)
                     Image(systemName: "sun.and.horizon.fill")
                         .font(.title)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Palette.accentText)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Welcome to LumenBar")
-                        .font(.title2.weight(.bold))
-                    Text("Native macOS Circadian Blue-Light Filter & PWM-Free Brightness Suite")
+                        .font(LumenTypography.heroTitle)
+                    Text("Circadian blue-light filter and PWM-free brightness for macOS")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -39,8 +33,8 @@ struct OnboardingSheetView: View {
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, Space.sm)
                     .padding(.vertical, 4)
-                    .background(Color.orange.opacity(0.18), in: Capsule())
-                    .foregroundStyle(.orange)
+                    .background(LumenSemantic.selectionFill, in: Capsule())
+                    .foregroundStyle(Palette.accentText)
             }
 
             Divider()
@@ -81,14 +75,12 @@ struct OnboardingSheetView: View {
                         model.onboardingStep += 1
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.orange)
                 } else {
                     Button("Finish & Start Protecting Eyes") {
                         model.selectMode(.automatic)
                         model.completeOnboarding()
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.orange)
                 }
             }
         }
@@ -119,13 +111,13 @@ private struct OnboardingStepOneProfile: View {
                         VStack(alignment: .leading, spacing: Space.xs) {
                             HStack {
                                 Image(systemName: tier == .pro ? "sparkles" : "shield.lefthalf.filled")
-                                    .foregroundStyle(.orange)
+                                    .foregroundStyle(Palette.accentText)
                                 Text(tier.title)
                                     .font(.headline)
                                 Spacer()
                                 if isSelected {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(LumenSemantic.selectionStroke)
                                 }
                             }
                             Text(tier == .pro
@@ -137,12 +129,12 @@ private struct OnboardingStepOneProfile: View {
                         .padding(Space.md)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
-                            isSelected ? Color.orange.opacity(0.16) : Color.primary.opacity(0.05),
-                            in: RoundedRectangle(cornerRadius: 12)
+                            isSelected ? LumenSemantic.selectionFill : LumenSemantic.selectionMutedFill,
+                            in: RoundedRectangle(cornerRadius: LumenRadius.md, style: .continuous)
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .strokeBorder(isSelected ? Color.orange : Color.clear, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: LumenRadius.md, style: .continuous)
+                                .strokeBorder(isSelected ? LumenSemantic.selectionStroke : .clear, lineWidth: 2)
                         )
                     }
                     .buttonStyle(.plain)
@@ -160,7 +152,7 @@ private struct OnboardingStepOneProfile: View {
                     } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Image(systemName: preset.symbolName)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(Palette.accentText)
                             Text(preset.title)
                                 .font(.caption.weight(.bold))
                             Text(preset.specialty)
@@ -171,12 +163,12 @@ private struct OnboardingStepOneProfile: View {
                         .padding(Space.sm)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(
-                            selected ? Color.orange.opacity(0.16) : Color.primary.opacity(0.05),
-                            in: RoundedRectangle(cornerRadius: 8)
+                            selected ? LumenSemantic.selectionFill : LumenSemantic.selectionMutedFill,
+                            in: RoundedRectangle(cornerRadius: LumenRadius.sm, style: .continuous)
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(selected ? Color.orange : Color.clear, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: LumenRadius.sm, style: .continuous)
+                                .strokeBorder(selected ? LumenSemantic.selectionStroke : .clear, lineWidth: 2)
                         )
                     }
                     .buttonStyle(.plain)
@@ -206,7 +198,7 @@ private struct OnboardingStepTwoLiveTest: View {
                     } label: {
                         HStack(spacing: Space.sm) {
                             Image(systemName: tc.symbol)
-                                .foregroundStyle(active ? .orange : Palette.accentText)
+                                .foregroundStyle(active ? LumenSemantic.selectionStroke : Palette.accentText)
                             Text(tc.title)
                                 .font(.caption.weight(.semibold))
                                 .lineLimit(1)
@@ -214,12 +206,12 @@ private struct OnboardingStepTwoLiveTest: View {
                         }
                         .padding(Space.sm)
                         .background(
-                            active ? Color.orange.opacity(0.20) : Color.primary.opacity(0.06),
-                            in: RoundedRectangle(cornerRadius: 8)
+                            active ? LumenSemantic.selectionFill : LumenSemantic.selectionMutedFill,
+                            in: RoundedRectangle(cornerRadius: LumenRadius.sm, style: .continuous)
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(active ? Color.orange : Color.clear, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: LumenRadius.sm, style: .continuous)
+                                .strokeBorder(active ? LumenSemantic.selectionStroke : .clear, lineWidth: 2)
                         )
                     }
                     .buttonStyle(.plain)
@@ -228,7 +220,7 @@ private struct OnboardingStepTwoLiveTest: View {
 
             HStack(spacing: Space.sm) {
                 Image(systemName: "waveform.path.ecg")
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(Palette.accentText)
                 Text(model.lastTestFeedback)
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
@@ -265,19 +257,19 @@ private struct OnboardingStepThreeSystemSetup: View {
                     .font(.subheadline.weight(.semibold))
                 Grid(alignment: .leading, horizontalSpacing: Space.lg, verticalSpacing: Space.xs) {
                     GridRow {
-                        Text("⌃⌥⌘P").font(.caption.monospaced().weight(.bold)).foregroundStyle(.orange)
+                        Text("⌃⌥⌘P").font(.caption.monospaced().weight(.bold)).foregroundStyle(Palette.accentText)
                         Text("Pause / Resume Blue-Light Filter immediately").font(.caption)
                     }
                     GridRow {
-                        Text("⌃⌥⌘M").font(.caption.monospaced().weight(.bold)).foregroundStyle(.orange)
+                        Text("⌃⌥⌘M").font(.caption.monospaced().weight(.bold)).foregroundStyle(Palette.accentText)
                         Text("Cycle through all 11 Circadian Preset Types").font(.caption)
                     }
                     GridRow {
-                        Text("⌃⌥⌘← / →").font(.caption.monospaced().weight(.bold)).foregroundStyle(.orange)
+                        Text("⌃⌥⌘← / →").font(.caption.monospaced().weight(.bold)).foregroundStyle(Palette.accentText)
                         Text("Step Color Temperature Warmer (-250K) or Cooler (+250K)").font(.caption)
                     }
                     GridRow {
-                        Text("⌃⌥⌘↑ / ↓").font(.caption.monospaced().weight(.bold)).foregroundStyle(.orange)
+                        Text("⌃⌥⌘↑ / ↓").font(.caption.monospaced().weight(.bold)).foregroundStyle(Palette.accentText)
                         Text("Step PWM-Free Brightness Up (+5%) or Down (-5%)").font(.caption)
                     }
                 }

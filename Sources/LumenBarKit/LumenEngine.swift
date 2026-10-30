@@ -217,6 +217,9 @@ public enum FilterPresetType: String, CaseIterable, Codable, Identifiable, Senda
         }
     }
 
+    /// Asset catalog name for a custom preset mark; SF Symbol fallback in UI when missing.
+    public var markImageName: String { "preset-mark-\(rawValue)" }
+
     public var symbolName: String {
         switch self {
         case .health: "heart.text.square.fill"

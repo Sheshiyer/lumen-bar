@@ -2,7 +2,7 @@
   "probes" : [
     {
       "area" : "presets",
-      "height" : 1077.52294921875,
+      "height" : 1326.5,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -13,7 +13,7 @@
     {
       "area" : "presets",
       "edge" : "lead",
-      "height" : 217.02294921875,
+      "height" : 172.5,
       "inset" : 0,
       "kind" : "probe",
       "name" : "hero-banner",
@@ -24,24 +24,46 @@
     {
       "area" : "presets",
       "edge" : "lead",
-      "height" : 112.5,
+      "height" : 203,
       "inset" : 0,
       "kind" : "probe",
-      "name" : "quick-sliders",
+      "name" : "recommended-preset",
       "width" : 856,
       "x" : 264,
-      "y" : 305.02294921875
+      "y" : 260.5
     },
     {
       "area" : "presets",
       "edge" : "lead",
-      "height" : 676,
+      "height" : 700,
       "inset" : 0,
       "kind" : "probe",
       "name" : "presets-grid",
       "width" : 856,
       "x" : 264,
-      "y" : 433.52294921875
+      "y" : 479.5
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 123,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "quick-sliders",
+      "width" : 856,
+      "x" : 264,
+      "y" : 1195.5
+    },
+    {
+      "area" : "presets",
+      "edge" : "lead",
+      "height" : 24,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "verify-strip",
+      "width" : 856,
+      "x" : 264,
+      "y" : 1334.5
     }
   ],
   "window" : {

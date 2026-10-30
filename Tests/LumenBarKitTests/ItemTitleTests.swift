@@ -104,6 +104,19 @@ final class LumenBarKitTests: XCTestCase {
         XCTAssertEqual(orangeDimmed10.b, 0)
     }
 
+    func testPresetMarkImageNames() {
+        for preset in FilterPresetType.allCases {
+            XCTAssertEqual(preset.markImageName, "preset-mark-\(preset.rawValue)")
+        }
+    }
+
+    func testSolarScheduleEstimator() {
+        let hours = SolarScheduleEstimator.estimatedHours()
+        XCTAssertGreaterThanOrEqual(hours.dayStartHour, 0)
+        XCTAssertLessThan(hours.dayStartHour, 24)
+        XCTAssertGreaterThan(hours.nightStartHour, hours.dayStartHour)
+    }
+
     func testCircadianSchedulerInterpolation() {
         let spec = FilterPresetType.health.specification(for: .pro)
         let schedule = CircadianScheduleConfig(

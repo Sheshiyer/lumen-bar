@@ -67,6 +67,19 @@ enum SelfTest {
             model.completeOnboarding()
             check("Onboarding completion persists", model.hasCompletedOnboarding && !model.isShowingOnboarding)
 
+            model.scheduleTimedPause(minutes: 15)
+            check("Timed pause sets paused mode", model.mode == .paused && model.timedPauseResumeAt != nil)
+            model.cancelTimedPause()
+            check("Cancel timed pause restores automatic", model.mode == .automatic && model.timedPauseResumeAt == nil)
+
+            let solar = SolarScheduleEstimator.estimatedHours()
+            check("Solar schedule returns ordered hours", solar.dayStartHour < solar.nightStartHour)
+
+            model.triggerRestBreakNow()
+            check("Break overlay opens", model.isShowingBreakOverlay && model.isOnBreakReminder)
+            model.dismissBreakOverlay()
+            check("Break overlay dismisses", !model.isShowingBreakOverlay)
+
             print(failures == 0 ? "SELFTEST PASS \(count) checks" : "SELFTEST FAIL \(failures) of \(count) checks")
             finish(code: failures == 0 ? 0 : 1)
         }

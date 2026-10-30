@@ -38,6 +38,7 @@ struct SavedFilterState: Codable, Equatable {
     var hasCompletedOnboarding: Bool = false
     var launchAtLoginEnabled: Bool = false
     var showMenuBarText: Bool = true
+    var useSolarSchedule: Bool = false
     var updatedAt: Date = .now
 }
 
@@ -88,17 +89,17 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .schedule: "Light & Schedule"
         case .effects: "Overlay & Effects"
         case .eyerest: "Eye Rest & Pausers"
-        case .diagnostics: "REA & Diagnostics"
+        case .diagnostics: "Display & Advanced"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .presets: "All 3 modes & 11 circadian presets"
-        case .schedule: "Day, Night & Sleep circadian curve"
-        case .effects: "12 Color Therapy tints & vignette"
-        case .eyerest: "20-20-20 timer & app auto-pause"
-        case .diagnostics: "Live 256-LUT & REA binary ledger"
+        case .presets: "Modes, presets, live status"
+        case .schedule: "Day, night & sleep curve"
+        case .effects: "Overlays, vignette, LUT effects"
+        case .eyerest: "Break timer & app pausers"
+        case .diagnostics: "LUT curve, displays, REA ledger"
         }
     }
 
@@ -221,7 +222,13 @@ final class AppModel {
     var launchAtLoginEnabled: Bool = false
     var showMenuBarText: Bool = true
     var activeVisualTest: VisualTestCase? = nil
-    var lastTestFeedback: String = "Click any live test button below to verify real-time hardware gamma & overlay rendering on your display."
+    var lastTestFeedback: String = "Run a verification test to confirm hardware gamma and overlays on your display."
+
+    var presetsAdjustExpanded: Bool = true
+    var presetsVerifyExpanded: Bool = false
+    var useSolarSchedule: Bool = false
+    var timedPauseResumeAt: Date? = nil
+    var isShowingBreakOverlay: Bool = false
 
     // New App Pause Rule Sheet/Form
     var newRuleAppName: String = ""
@@ -356,9 +363,63 @@ final class AppModel {
         guard showMenuBarText else { return "" }
         let st = effectiveState
         if st.isEffectivelyPaused {
+            if timedPauseResumeAt != nil { return "Paused ⏱" }
             return "Paused"
         }
         return "\(st.kelvin)K · \(st.brightnessPercent)%"
+    }
+
+    func recommendedPreset(for phase: CircadianPhase) -> FilterPresetType {
+        switch phase {
+        case .day: .health
+        case .night: .health
+        case .sleep: .sleep
+        }
+    }
+
+    func scheduleTimedPause(minutes: Int) {
+        timedPauseResumeAt = Date().addingTimeInterval(TimeInterval(minutes * 60))
+        mode = .paused
+        saveAndApply()
+    }
+
+    func scheduleTimedPauseUntilTomorrow() {
+        let cal = Calendar.current
+        var comps = cal.dateComponents([.year, .month, .day], from: Date())
+        comps.day = (comps.day ?? 0) + 1
+        comps.hour = 7
+        comps.minute = 0
+        timedPauseResumeAt = cal.date(from: comps) ?? Date().addingTimeInterval(8 * 3600)
+        mode = .paused
+        saveAndApply()
+    }
+
+    func cancelTimedPause() {
+        timedPauseResumeAt = nil
+        if mode == .paused {
+            mode = .automatic
+        }
+        saveAndApply()
+    }
+
+    func applySolarScheduleIfNeeded() {
+        guard useSolarSchedule else { return }
+        let hours = SolarScheduleEstimator.estimatedHours()
+        dayStartHour = hours.dayStartHour
+        nightStartHour = hours.nightStartHour
+        sleepStartHour = hours.sleepStartHour
+    }
+
+    func snoozeBreak(minutes: Int = 5) {
+        isShowingBreakOverlay = false
+        isOnBreakReminder = false
+        remainingWorkSeconds = max(60, minutes * 60)
+    }
+
+    func dismissBreakOverlay() {
+        isShowingBreakOverlay = false
+        isOnBreakReminder = false
+        remainingWorkSeconds = max(1, restWorkMinutes) * 60
     }
 
     // MARK: - User Actions
@@ -536,6 +597,7 @@ final class AppModel {
 
     func triggerRestBreakNow() {
         isOnBreakReminder = true
+        isShowingBreakOverlay = true
         remainingWorkSeconds = max(5, restBreakSeconds)
     }
 
@@ -600,6 +662,7 @@ final class AppModel {
             hasCompletedOnboarding: hasCompletedOnboarding,
             launchAtLoginEnabled: launchAtLoginEnabled,
             showMenuBarText: showMenuBarText,
+            useSolarSchedule: useSolarSchedule,
             updatedAt: .now
         )
         let payload = PersistentStorePayload(state: state, pauseRules: pauseRules)
@@ -612,7 +675,11 @@ final class AppModel {
     }
 
     func applyCurrentDisplayState() {
-        DisplayGammaEngine.shared.apply(state: effectiveState, excludedDisplayIDs: excludedDisplayIDs)
+        DisplayGammaEngine.shared.apply(
+            state: effectiveState,
+            excludedDisplayIDs: excludedDisplayIDs,
+            animated: true
+        )
     }
 
     private func loadOrSeedStore() {
@@ -649,6 +716,7 @@ final class AppModel {
             hasCompletedOnboarding = saved.hasCompletedOnboarding
             launchAtLoginEnabled = saved.launchAtLoginEnabled
             showMenuBarText = saved.showMenuBarText
+            useSolarSchedule = saved.useSolarSchedule
             remainingWorkSeconds = max(1, saved.restWorkMinutes) * 60
             pauseRules = payload.pauseRules
         } else {
@@ -696,15 +764,23 @@ final class AppModel {
     }
 
     private func onSecondTick() {
+        if let resumeAt = timedPauseResumeAt, Date() >= resumeAt {
+            timedPauseResumeAt = nil
+            if mode == .paused {
+                mode = .automatic
+                saveAndApply()
+            }
+        }
+
         if restTimerEnabled && !effectiveState.isEffectivelyPaused {
             if remainingWorkSeconds > 0 {
                 remainingWorkSeconds -= 1
             } else {
                 if isOnBreakReminder {
-                    isOnBreakReminder = false
-                    remainingWorkSeconds = max(1, restWorkMinutes) * 60
+                    dismissBreakOverlay()
                 } else {
                     isOnBreakReminder = true
+                    isShowingBreakOverlay = true
                     remainingWorkSeconds = max(5, restBreakSeconds)
                 }
             }

@@ -4,7 +4,15 @@ Built from `docs/BRIEF.md` and `docs/research/blue-light-filter-research.md` fol
 
 ## Milestone 1: Core Gamma LUT & Preset Engine (`M1`)
 
-### S-001 Apply exact 101-step Iris Kelvin LUT and PWM-free brightness
+### S-UI-001 Presets homepage (circadian command center)
+As the user, I open LumenBar and immediately see live display status, a phase-based recommended preset, the full preset gallery with kelvin strips, and collapsible adjust/verify sections.
+Screens: `presets-light.png`, `presets-dark.png`
+Acceptance:
+- [snap] Probes `hero-banner`, `recommended-preset`, `presets-grid`, `quick-sliders`, and `verify-strip` on the presets page.
+- [self] Timed pause, break overlay, and solar schedule toggles integrate without breaking preset selection.
+Status: done
+
+### S-001 Apply exact 101-step Kelvin LUT and PWM-free brightness
 As the user, I select a color temperature (`0K–10000K`) and brightness (`10%–120%`) so my display's blue/green light and luminance update smoothly via CoreGraphics gamma tables.
 Screens: `presets-light.png`, `presets-dark.png`
 Acceptance:
@@ -24,8 +32,8 @@ Acceptance:
 - [snap] The top mode bar and live status card display active mode, phase (`Day`, `Night`, `Sleep`), Kelvin, and Brightness.
 Status: done
 
-### S-003 Select any of the 11 Iris Preset Types (Standard & Pro profiles)
-As the user, I click any of the 11 preset cards (`Health`, `Sleep`, `Reading`, `Programming`, `Biohacker`, `Sunglasses`, `Dark`, `Movie`, `Overlay`, `Gaming`, `Custom`) and toggle between **Iris Pro** and **Iris Standard** presets.
+### S-003 Select any of the 11 preset types (Max & Gentle profiles)
+As the user, I click any of the 11 preset tiles and toggle between **LumenBar Max** and **LumenBar Gentle** profiles.
 Screens: `presets-light.png`, `presets-dark.png`
 Depends: S-001, S-002
 Acceptance:
@@ -45,8 +53,8 @@ Acceptance:
 - [self] Dragging the transition preview or changing schedule hours updates the interpolated Kelvin/Brightness readout.
 Status: done
 
-### S-005 Customize Color Therapy Overlays, Dark Vignette, and Screen Effects
-As the user, I configure the 12 Iris Color Therapy overlay pigments, Dark mode radial vignette radius/opacity, E-Ink grayscale, and Gamma Fixer on the `Overlay & Effects` page.
+### S-005 Customize color therapy overlays, dark vignette, and screen effects
+As the user, I configure the 12 color therapy overlay pigments, Dark mode radial vignette radius/opacity, E-Ink grayscale, and Gamma Fixer on the `Overlay & Effects` page.
 Screens: `effects-light.png`, `effects-dark.png`
 Depends: S-003
 Acceptance:
@@ -64,12 +72,12 @@ Acceptance:
 - [snap] The `Eye Rest & Pausers` page displays the timer ring, quick start/reset controls, and the app pauser list.
 Status: done
 
-### S-007 Inspect live LUT curves, multi-display status, and REA binary provenance
-As the user, I open the `REA & Diagnostics` page to inspect the live 256-entry RGB gamma curves, connected displays, URL/CLI automation commands, and REA reverse-engineering evidence from `Iris.app`.
+### S-007 Inspect live LUT curves, multi-display status, and REA provenance
+As the user, I open **Display & Advanced** to inspect live gamma curves, connected displays, and REA ledger entries.
 Screens: `diagnostics-light.png`, `diagnostics-dark.png`
 Depends: S-001
 Acceptance:
-- [snap] The `REA & Diagnostics` page renders the live R/G/B transfer curves, per-display status, global shortcut cheatsheet, and REA Evidence table.
+- [snap] The page renders R/G/B transfer curves, per-display toggles, and REA provenance grid.
 Status: done
 
 ## Dropped

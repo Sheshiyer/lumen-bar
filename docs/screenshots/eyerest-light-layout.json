@@ -2,7 +2,7 @@
   "probes" : [
     {
       "area" : "effects",
-      "height" : 532.84033203125,
+      "height" : 410.84033203125,
       "inset" : 20,
       "kind" : "area",
       "name" : "effects",
@@ -12,7 +12,7 @@
     },
     {
       "area" : "eyerest",
-      "height" : 746.420166015625,
+      "height" : 578.420166015625,
       "inset" : 20,
       "kind" : "area",
       "name" : "eyerest",
@@ -29,7 +29,7 @@
       "name" : "rest-timer-card",
       "width" : 856,
       "x" : 264,
-      "y" : 240
+      "y" : 72
     },
     {
       "area" : "eyerest",
@@ -40,11 +40,11 @@
       "name" : "app-pausers-card",
       "width" : 856,
       "x" : 264,
-      "y" : 371.420166015625
+      "y" : 203.420166015625
     },
     {
       "area" : "presets",
-      "height" : 1012.5,
+      "height" : 1326.5,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -53,19 +53,8 @@
       "y" : 52
     },
     {
-      "area" : "presets",
-      "edge" : "lead",
-      "height" : 152,
-      "inset" : 0,
-      "kind" : "probe",
-      "name" : "hero-banner",
-      "width" : 856,
-      "x" : 264,
-      "y" : 72
-    },
-    {
       "area" : "schedule",
-      "height" : 797.420166015625,
+      "height" : 673.29541015625,
       "inset" : 20,
       "kind" : "area",
       "name" : "schedule",

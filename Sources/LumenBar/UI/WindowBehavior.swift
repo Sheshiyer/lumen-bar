@@ -20,12 +20,21 @@ extension View {
 
 private struct FitsContent: ViewModifier {
     var max: CGFloat
-    @State private var height: CGFloat?
 
     func body(content: Content) -> some View {
-        content
-            // Only the content's own height: the insets change as the window
-            // resizes, which would start a resize loop.
+        FitsContentSizer(max: max) {
+            content
+        }
+    }
+}
+
+private struct FitsContentSizer<Inner: View>: View {
+    var max: CGFloat
+    @ViewBuilder var content: () -> Inner
+    @State private var height: CGFloat?
+
+    var body: some View {
+        content()
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.contentSize.height.rounded(.up)
             } action: { _, new in

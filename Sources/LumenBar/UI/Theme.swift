@@ -53,7 +53,7 @@ final class ThemeStore {
 
     /// The accent the app ships with. Keep "system", so the app follows the
     /// accent people chose for their Mac.
-    static let defaultID = "system"
+    static let defaultID = "graphite"
 
     /// The app's brand color, or nil. Like Apple's own apps, the brand shows
     /// only while the Mac's accent is Multicolor (System Settings >

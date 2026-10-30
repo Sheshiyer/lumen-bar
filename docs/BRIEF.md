@@ -1,37 +1,36 @@
 # LumenBar
 
-A native macOS blue-light filter, PWM-free brightness controller, and circadian display suite featuring all 3 Iris automation modes and all 11 preset types.
+A native macOS blue-light filter, PWM-free brightness controller, and circadian display suite with three automation modes and eleven preset types.
 
 ## Replaces
-Iris / Iris Pro (macOS), f.lux, and macOS Night Shift.
+Third-party macOS blue-light utilities, f.lux, and macOS Night Shift for users who want local, offline control.
 
 ## Main jobs
-1. **Switch Modes & Presets Instantly**: Toggle between `Automatic`, `Manual`, and `Paused` modes and choose any of the 11 Iris preset types (`Health`, `Sleep`, `Reading`, `Programming`, `Biohacker`, `Sunglasses`, `Dark`, `Movie`, `Overlay`, `Gaming`, `Custom`) in either **Iris Pro** or **Iris Standard** intensity profiles.
-2. **Fine-Tune Day, Night & Sleep Display Curves**: Adjust Color Temperature (`0K` pure red to `10000K` cool blue), PWM-free Brightness (`10%` to `120%` Movie gamma boost), Color Therapy Overlay pigments (12 tints), Dark mode radial vignette spotlight, and screen effects (Inversion, E-Ink Grayscale).
-3. **Protect Eyes Automatically All Day**: Run a 20-20-20 Eye Rest Timer, auto-pause when color-critical apps (Photoshop, Figma, Blender, Final Cut Pro) are frontmost, and control per-monitor filtering from the menu bar or global keyboard shortcuts.
+1. **Switch modes and presets instantly**: Toggle `Automatic`, `Manual`, and `Paused` (including timed pause) and choose any of the 11 preset types (`Health`, `Sleep`, `Reading`, `Programming`, `Biohacker`, `Sunglasses`, `Dark`, `Movie`, `Overlay`, `Gaming`, `Custom`) in **LumenBar Max** or **LumenBar Gentle** intensity profiles.
+2. **Fine-tune day, night, and sleep curves**: Adjust color temperature (`0K`–`10000K`), PWM-free brightness (`10%`–`120%`), color therapy overlays (12 tints), dark vignette, and screen effects (inversion, E-Ink grayscale). Optional approximate solar schedule from time zone.
+3. **Protect eyes automatically**: 20-20-20 break overlay, auto-pause for color-critical apps, per-monitor filtering, menu bar and global shortcuts, smooth gamma cross-fades.
 
 ## Data
-- `FilterProfile`: Active `AutomationMode` (`automatic`, `manual`, `paused`), active `FilterPresetType` (11 presets), `IrisTier` (`pro`, `standard`), Day/Night/Sleep temperature (`0–10000K`) and brightness (`10–120%`), schedule hours, transition duration, overlay pigment (`12` tints), vignette opacity/radius, gamma fixer exponent, and inversion/grayscale flags.
-- `AppPauseRule`: Bundle identifier, app name, and enabled state for automatic color-critical app pausing.
-- `RestTimerState`: Work interval (minutes), break duration (seconds), enabled flag, and countdown status.
+- `SavedFilterState`: mode, preset, `ProtectionTier`, manual/custom phase targets, schedule, overlay and vignette settings, rest timer, solar schedule flag, onboarding and menu bar preferences.
+- `AppPauseRule`: bundle ID, app name, enabled state.
+- Local JSON store under Application Support (or `APP_STORE` in `/tmp` for tests).
 
 ## Shape
-Sidebar window (`Presets & Modes`, `Light & Schedule`, `Overlay & Effects`, `Eye Rest & Pausers`, `REA & Diagnostics`) + Menu Bar Extra popover, macOS 26 or later (compatible down to macOS 15+).
-Local data. Works offline. No accounts.
+Sidebar window (`Presets & Modes`, `Light & Schedule`, `Overlay & Effects`, `Eye Rest & Pausers`, `Display & Advanced`) + menu bar popover. macOS 26+ (compatible down to macOS 15+). Local data, offline, no accounts.
 
 ## System hooks
-- Global shortcuts (`Control+Option+Command+P` pause/resume, `Control+Option+Command+M` cycle preset, `Control+Option+Command+Up/Down` brightness, `Control+Option+Command+Left/Right` temperature)
-- Menu bar item (`MenuBarExtra` with live Kelvin & Brightness badge + quick controls)
-- URL scheme (`lumenbar://mode/<name>`, `lumenbar://preset/<name>`, `lumenbar://toggle-pause`)
-- In-app CLI / self-test (`--self-test`) and snapshot runner (`APP_SNAPSHOT`)
+- Global shortcuts (`⌃⌥⌘P` pause, `⌃⌥⌘M` cycle preset, `⌃⌥⌘↑/↓` brightness, `⌃⌥⌘←/→` temperature)
+- Menu bar extra with live Kelvin/brightness, favorites, timed pause
+- URL scheme (`lumenbar://mode/…`, `lumenbar://preset/…`, `lumenbar://toggle-pause`)
+- In-app self-test (`--selftest`) and snapshot runner (`APP_SNAPSHOT`)
 
 ## Reference
-Iris Pro v1.2.2 for macOS (`https://iristech.co/free-blue-light-filter-app/`), reverse-engineered with REA (`https://github.com/morluto/rea`) and architected with BAMA (`https://github.com/daveebbelaar/bama`).
+Display pipeline informed by REA reverse-engineering research and built with the BAMA native macOS workflow.
 
 ## Look
-Native macOS SwiftUI design with warm amber circadian accents, a live interactive display preview card, 24-hour circadian solar curve visualizer, and instant one-click preset cards.
+Premium-dark native SwiftUI: restrained neutrals, graphite default accent, `LumenSurface` cards, kelvin phase strips on preset tiles, circadian command-center homepage (status hero, recommended preset, gallery, collapsible adjust and verify), and system materials with accent used for selection and primary actions only.
 
 ## Not in version one
-- Cloud accounts, telemetry, or license-key paywalls (all Iris Pro features are unlocked locally for free)
+- Cloud accounts, telemetry, or license paywalls
 - Hardware webcam blink-rate recording
 - Windows / Linux builds

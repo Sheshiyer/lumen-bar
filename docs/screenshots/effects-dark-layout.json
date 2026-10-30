@@ -2,7 +2,7 @@
   "probes" : [
     {
       "area" : "diagnostics",
-      "height" : 689.420166015625,
+      "height" : 630.84033203125,
       "inset" : 20,
       "kind" : "area",
       "name" : "diagnostics",
@@ -12,7 +12,7 @@
     },
     {
       "area" : "effects",
-      "height" : 532.84033203125,
+      "height" : 410.84033203125,
       "inset" : 20,
       "kind" : "area",
       "name" : "effects",
@@ -29,22 +29,22 @@
       "name" : "overlay-pigments",
       "width" : 856,
       "x" : 264,
-      "y" : 240
+      "y" : 72
     },
     {
       "area" : "effects",
       "edge" : "lead",
-      "height" : 122.420166015625,
+      "height" : 168.420166015625,
       "inset" : 0,
       "kind" : "probe",
       "name" : "vignette-effects",
       "width" : 856,
       "x" : 264,
-      "y" : 442.420166015625
+      "y" : 274.420166015625
     },
     {
       "area" : "eyerest",
-      "height" : 746.420166015625,
+      "height" : 578.420166015625,
       "inset" : 20,
       "kind" : "area",
       "name" : "eyerest",
@@ -54,7 +54,7 @@
     },
     {
       "area" : "presets",
-      "height" : 1012.5,
+      "height" : 1326.5,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -63,19 +63,8 @@
       "y" : 52
     },
     {
-      "area" : "presets",
-      "edge" : "lead",
-      "height" : 152,
-      "inset" : 0,
-      "kind" : "probe",
-      "name" : "hero-banner",
-      "width" : 856,
-      "x" : 264,
-      "y" : 72
-    },
-    {
       "area" : "schedule",
-      "height" : 797.420166015625,
+      "height" : 673.29541015625,
       "inset" : 20,
       "kind" : "area",
       "name" : "schedule",

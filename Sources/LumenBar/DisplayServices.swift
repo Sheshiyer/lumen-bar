@@ -24,6 +24,8 @@ final class DisplayGammaEngine {
     private(set) var lastTables: GammaTransferTables = GammaRampBuilder.buildTables(kelvin: 6500, brightnessPercent: 100)
     private(set) var lastAppliedStatus: String = "Calibrated (6500K / 100%)"
     private(set) var connectedDisplays: [DisplayDescriptor] = []
+    private var crossfadeTask: Task<Void, Never>?
+    private let crossfadeDuration: TimeInterval = 0.6
 
     /// Avoid mutating the real hardware gamma table while running automated UI snapshots or self-tests.
     var isSimulationMode: Bool {
@@ -84,10 +86,12 @@ final class DisplayGammaEngine {
         connectedDisplays = list
     }
 
-    func apply(state: EffectiveDisplayState, excludedDisplayIDs: Set<CGDirectDisplayID>) {
+    func apply(state: EffectiveDisplayState, excludedDisplayIDs: Set<CGDirectDisplayID>, animated: Bool = false) {
         refreshDisplays()
 
         if state.isEffectivelyPaused {
+            crossfadeTask?.cancel()
+            crossfadeTask = nil
             lastTables = GammaRampBuilder.buildTables(kelvin: 6500, brightnessPercent: 100)
             if !isSimulationMode {
                 CGDisplayRestoreColorSyncSettings()
@@ -109,6 +113,60 @@ final class DisplayGammaEngine {
             gammaFixer: state.gammaFixer,
             capacity: 256
         )
+
+        if animated && !isSimulationMode {
+            beginCrossfade(from: lastTables, to: tables, state: state, excludedDisplayIDs: excludedDisplayIDs)
+            return
+        }
+
+        commitTables(tables, state: state, excludedDisplayIDs: excludedDisplayIDs)
+    }
+
+    private func beginCrossfade(
+        from: GammaTransferTables,
+        to: GammaTransferTables,
+        state: EffectiveDisplayState,
+        excludedDisplayIDs: Set<CGDirectDisplayID>
+    ) {
+        crossfadeTask?.cancel()
+        crossfadeTask = Task { @MainActor in
+            let steps = 36
+            for step in 0...steps {
+                if Task.isCancelled { return }
+                let t = Double(step) / Double(steps)
+                let eased = t * t * (3 - 2 * t)
+                let blended = Self.lerpTables(from: from, to: to, amount: Float(eased))
+                commitTables(
+                    blended,
+                    state: state,
+                    excludedDisplayIDs: excludedDisplayIDs,
+                    updateStatus: step == steps
+                )
+                if step < steps {
+                    try? await Task.sleep(for: .milliseconds(Int(crossfadeDuration * 1000 / Double(steps))))
+                }
+            }
+        }
+    }
+
+    private static func lerpTables(from: GammaTransferTables, to: GammaTransferTables, amount: Float) -> GammaTransferTables {
+        func mix(_ a: [Float], _ b: [Float]) -> [Float] {
+            zip(a, b).map { $0 + ($1 - $0) * amount }
+        }
+        return GammaTransferTables(
+            capacity: from.capacity,
+            red: mix(from.red, to.red),
+            green: mix(from.green, to.green),
+            blue: mix(from.blue, to.blue)
+        )
+    }
+
+    private func commitTables(
+        _ tables: GammaTransferTables,
+        state: EffectiveDisplayState,
+        excludedDisplayIDs: Set<CGDirectDisplayID>,
+        updateStatus: Bool = true
+    ) {
         lastTables = tables
 
         if !isSimulationMode {
@@ -122,7 +180,9 @@ final class DisplayGammaEngine {
             }
         }
 
-        lastAppliedStatus = "\(state.preset.title) (\(state.phase.title)) · \(state.kelvin)K · \(state.brightnessPercent)%"
+        if updateStatus {
+            lastAppliedStatus = "\(state.preset.title) (\(state.phase.title)) · \(state.kelvin)K · \(state.brightnessPercent)%"
+        }
         DisplayOverlayController.shared.updateOverlays(state: state, excludedDisplayIDs: excludedDisplayIDs)
     }
 
