@@ -8,5 +8,6 @@ xcuserdata/
 /shots/
 .research/
 .build-app/
+.build-check/
 .build-tests/
 dist/
