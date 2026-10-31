@@ -117,6 +117,36 @@ final class LumenBarKitTests: XCTestCase {
         XCTAssertGreaterThan(hours.nightStartHour, hours.dayStartHour)
     }
 
+    func testDisplayProfiles() throws {
+        let follow = DisplayProfile()
+        let followed = follow.look(mainKelvin: 3400, mainBrightnessPercent: 80, paused: false)
+        XCTAssertEqual(followed.kelvin, 3400)
+        XCTAssertEqual(followed.brightnessPercent, 80)
+        XCTAssertTrue(followed.isFiltered)
+
+        let custom = DisplayProfile(mode: .custom, kelvin: 12000, brightnessPercent: 4)
+        XCTAssertEqual(custom.kelvin, 10000)
+        XCTAssertEqual(custom.brightnessPercent, 10)
+        let own = custom.look(mainKelvin: 6500, mainBrightnessPercent: 100, paused: false)
+        XCTAssertEqual(own.kelvin, 10000)
+        XCTAssertEqual(own.brightnessPercent, 10)
+
+        let paused = custom.look(mainKelvin: 3400, mainBrightnessPercent: 80, paused: true)
+        XCTAssertEqual(paused.kelvin, 6500)
+        XCTAssertEqual(paused.brightnessPercent, 100)
+        XCTAssertFalse(paused.isFiltered)
+
+        let off = DisplayProfile(mode: .off, kelvin: 2700, brightnessPercent: 50)
+        let calibrated = off.look(mainKelvin: 3400, mainBrightnessPercent: 80, paused: false)
+        XCTAssertEqual(calibrated.kelvin, 6500)
+        XCTAssertFalse(calibrated.isFiltered)
+
+        let encoded = try JSONEncoder().encode(DisplayProfile(mode: .custom, kelvin: 2700, brightnessPercent: 70))
+        let decoded = try JSONDecoder().decode(DisplayProfile.self, from: encoded)
+        XCTAssertEqual(decoded.mode, .custom)
+        XCTAssertEqual(decoded.kelvin, 2700)
+    }
+
     func testCircadianSchedulerInterpolation() {
         let spec = FilterPresetType.health.specification(for: .pro)
         let schedule = CircadianScheduleConfig(

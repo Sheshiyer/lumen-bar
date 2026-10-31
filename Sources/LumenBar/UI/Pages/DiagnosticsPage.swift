@@ -38,27 +38,22 @@ struct READiagnosticsPage: View {
 
             LumenSurface {
                 VStack(alignment: .leading, spacing: Space.md) {
-                    LumenSectionHeader(title: "Connected displays")
+                    LumenSectionHeader(title: "Connected displays", caption: "Choices live on the Displays page")
 
                     ForEach(engine.connectedDisplays) { display in
-                        let isExcluded = model.excludedDisplayIDs.contains(display.id)
+                        let profile = model.profile(for: display)
                         HStack(spacing: Space.md) {
-                            Image(systemName: display.isMain ? "display" : "display.2")
+                            Image(systemName: display.isBuiltin ? "laptopcomputer" : "display")
                                 .font(.title3)
                                 .foregroundStyle(LumenSemantic.statusActive)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(display.name) (ID \(display.id))")
+                                Text(display.name)
                                     .font(.subheadline.weight(.semibold))
-                                Text("Resolution \(display.resolution) · LUT \(display.gammaCapacity) entries")
+                                Text("\(display.resolution) · LUT \(display.gammaCapacity) · \(profile.mode.title)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                             Spacer()
-                            Button(isExcluded ? "Filtering off" : "Filtering on") {
-                                model.toggleDisplayExclusion(display.id)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(isExcluded ? .secondary : Palette.accent)
                         }
                         .padding(Space.sm)
                         .background(LumenSemantic.selectionMutedFill, in: RoundedRectangle(cornerRadius: LumenRadius.sm, style: .continuous))

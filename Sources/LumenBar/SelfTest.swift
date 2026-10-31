@@ -75,6 +75,25 @@ enum SelfTest {
             let solar = SolarScheduleEstimator.estimatedHours()
             check("Solar schedule returns ordered hours", solar.dayStartHour < solar.nightStartHour)
 
+            let display = DisplayDescriptor(
+                id: 1,
+                key: "selftest-display",
+                name: "Self Test Display",
+                resolution: "1920×1080",
+                isMain: false,
+                isBuiltin: false,
+                gammaCapacity: 256,
+                frame: .zero
+            )
+            model.setDisplayMode(display, mode: .custom)
+            model.setDisplayLook(display, kelvin: 2700, brightnessPercent: 60)
+            let saved = model.profile(for: display)
+            check("Custom display keeps its own look", saved.mode == .custom && saved.kelvin == 2700 && saved.brightnessPercent == 60)
+            let offLook = DisplayProfile(mode: .off).look(mainKelvin: 3400, mainBrightnessPercent: 80, paused: false)
+            check("Off display returns to calibrated", offLook.kelvin == 6500 && !offLook.isFiltered)
+            model.resetDisplay(display)
+            check("Reset display follows the main look", model.profile(for: display).mode == .follow)
+
             model.triggerRestBreakNow()
             check("Break overlay opens", model.isShowingBreakOverlay && model.isOnBreakReminder)
             model.dismissBreakOverlay()

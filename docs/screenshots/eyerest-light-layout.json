@@ -1,8 +1,18 @@
 {
   "probes" : [
     {
+      "area" : "displays",
+      "height" : 589,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "displays",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
       "area" : "effects",
-      "height" : 410.84033203125,
+      "height" : 410.239501953125,
       "inset" : 20,
       "kind" : "area",
       "name" : "effects",
@@ -12,7 +22,7 @@
     },
     {
       "area" : "eyerest",
-      "height" : 578.420166015625,
+      "height" : 578.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "eyerest",
@@ -23,7 +33,7 @@
     {
       "area" : "eyerest",
       "edge" : "lead",
-      "height" : 115.420166015625,
+      "height" : 115.079833984375,
       "inset" : 0,
       "kind" : "probe",
       "name" : "rest-timer-card",
@@ -40,11 +50,11 @@
       "name" : "app-pausers-card",
       "width" : 856,
       "x" : 264,
-      "y" : 203.420166015625
+      "y" : 203.079833984375
     },
     {
       "area" : "presets",
-      "height" : 1326.5,
+      "height" : 1327.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -54,7 +64,7 @@
     },
     {
       "area" : "schedule",
-      "height" : 673.29541015625,
+      "height" : 674.61474609375,
       "inset" : 20,
       "kind" : "area",
       "name" : "schedule",

@@ -54,6 +54,9 @@ private struct GeneralSettings: View {
             Toggle("20-20-20 Eye Rest Reminders", isOn: $model.restTimerEnabled)
                 .onChange(of: model.restTimerEnabled) { _, _ in model.saveAndApply() }
 
+            Toggle("Quiet Sound Cues", isOn: $model.soundCuesEnabled)
+                .onChange(of: model.soundCuesEnabled) { _, _ in model.saveAndApply() }
+
             LabeledContent("Onboarding & Live Tour") {
                 Button("Open Welcome & Display Verification Tour…") {
                     model.reopenOnboarding()

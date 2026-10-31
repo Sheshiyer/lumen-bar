@@ -12,6 +12,8 @@ Native macOS app for circadian blue-light filtering, PWM-free software brightnes
 - **Overlays & effects** — Twelve color-therapy tints, dark vignette, LUT inversion, and E-Ink-style grayscale (Reading).
 - **Schedule** — Day, night, and sleep windows, 24-hour curve preview, optional **approximate solar schedule** from your time zone (no location permission).
 - **Eye rest** — 20-20-20 timer with a full-screen **break overlay**; auto-pause when color-critical apps are frontmost.
+- **Multi-monitor desk** — every display follows the main look, stays calibrated, or keeps its own Kelvin and brightness. The choice is remembered and reapplied when a monitor is plugged back in.
+- **Quiet sound cues** — a soft chime when a break starts and ends, and a short tick when a preset lands. Toggle in Settings → General.
 - **Menu bar & shortcuts** — Live Kelvin/brightness readout, favorite presets, global shortcuts (`⌃⌥⌘P` pause, `⌃⌥⌘M` cycle preset, arrows for temperature and brightness).
 - **Deep links** — `lumenbar://preset/health`, `lumenbar://mode/automatic`, `lumenbar://toggle-pause`, and related URLs.
 
@@ -23,9 +25,12 @@ Native macOS app for circadian blue-light filtering, PWM-free software brightnes
 ## Build & install
 
 ```bash
-./build.sh          # build, sign, install to dist/LumenBar.app and ~/Applications/LumenBar.app
+./build.sh          # build, sign, install to dist/LumenBar.app and /Applications/LumenBar.app
 ./build.sh --open   # same, then relaunch the app
+tools/package.sh    # dist/LumenBar-<version>.zip and .dmg, plus dist/SHA256SUMS
 ```
+
+`tools/package.sh` signs with the Developer ID when one is present. Add `--notarize` (with `APPLE_ID`, `APPLE_TEAM_ID`, and `APPLE_APP_PASSWORD` set) to notarize and staple, which is what a download needs before Gatekeeper opens it without a warning.
 
 The app icon is compiled from `Icon/AppIcon.icon` via `tools/make_icon.sh`.
 

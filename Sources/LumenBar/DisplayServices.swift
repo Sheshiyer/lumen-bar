@@ -2,6 +2,7 @@ import AppKit
 import Carbon
 import CoreGraphics
 import Foundation
+import IOKit
 import LumenBarKit
 import SwiftUI
 
@@ -9,10 +10,56 @@ import SwiftUI
 
 struct DisplayDescriptor: Identifiable, Equatable {
     let id: CGDirectDisplayID
+    /// Stable across launches and plug cycles. Display IDs are not.
+    let key: String
     let name: String
     let resolution: String
     let isMain: Bool
+    let isBuiltin: Bool
     let gammaCapacity: Int
+    /// Position on the desk, in points, for the desk map.
+    let frame: CGRect
+
+    /// A short label for the desk map, such as "Built-in" or "LG HDR".
+    var shortName: String {
+        let trimmed = name
+            .replacingOccurrences(of: "Display", with: "")
+            .trimmingCharacters(in: .whitespaces)
+        return trimmed.isEmpty ? "Display" : trimmed
+    }
+}
+
+/// A monitor identity that survives relaunch. macOS display IDs do not.
+enum DisplayIdentity {
+    static func key(for id: CGDirectDisplayID, screen: NSScreen?) -> String {
+        if let uuid = CGDisplayCreateUUIDFromDisplayID(id)?.takeRetainedValue() {
+            return CFUUIDCreateString(kCFAllocatorDefault, uuid) as String
+        }
+        if let vendor = ioInt(id, kDisplayVendorID), let product = ioInt(id, kDisplayProductID) {
+            let serial = ioInt(id, kDisplaySerialNumber) ?? 0
+            return String(format: "vp-%08X-%08X-%08X", vendor, product, serial)
+        }
+        let name = screen?.localizedName ?? "display"
+        let width = CGDisplayPixelsWide(id)
+        let height = CGDisplayPixelsHigh(id)
+        return "fallback-\(name)-\(width)x\(height)"
+    }
+
+    private static func ioInt(_ id: CGDirectDisplayID, _ key: String) -> Int? {
+        guard let service = CGDisplayIOServicePortShim(id) else { return nil }
+        let info = IODisplayCreateInfoDictionary(service, IOOptionBits(kIODisplayNoProductName)).takeRetainedValue() as NSDictionary
+        return (info[key] as? NSNumber)?.intValue
+    }
+
+    /// `CGDisplayIOServicePort` left the SDK but the symbol is still there.
+    private static func CGDisplayIOServicePortShim(_ id: CGDirectDisplayID) -> io_service_t? {
+        let handle = dlopen(nil, RTLD_NOW)
+        defer { dlclose(handle) }
+        guard let symbol = dlsym(handle, "CGDisplayIOServicePort") else { return nil }
+        typealias Fn = @convention(c) (UInt32) -> io_service_t
+        let port = unsafeBitCast(symbol, to: Fn.self)(id)
+        return port == 0 ? nil : port
+    }
 }
 
 // MARK: - 2. CoreGraphics Gamma Engine (REA `MacGamma::set_temperature_for_display` @ `0x10011ab50`)
@@ -64,29 +111,57 @@ final class DisplayGammaEngine {
             list.append(
                 DisplayDescriptor(
                     id: id,
+                    key: DisplayIdentity.key(for: id, screen: screen),
                     name: name,
                     resolution: "\(width)×\(height)",
                     isMain: CGDisplayIsMain(id) != 0,
-                    gammaCapacity: max(256, cap)
+                    isBuiltin: CGDisplayIsBuiltin(id) != 0,
+                    gammaCapacity: max(256, cap),
+                    frame: screen?.frame ?? .zero
                 )
             )
         }
 
         if list.isEmpty {
+            let id = CGMainDisplayID()
             list.append(
                 DisplayDescriptor(
-                    id: CGMainDisplayID(),
-                    name: "Built-in Liquid Retina XDR Display",
+                    id: id,
+                    key: DisplayIdentity.key(for: id, screen: nil),
+                    name: "Built-in Display",
                     resolution: "3024×1964",
                     isMain: true,
-                    gammaCapacity: 256
+                    isBuiltin: true,
+                    gammaCapacity: 256,
+                    frame: .zero
                 )
             )
         }
         connectedDisplays = list
     }
 
-    func apply(state: EffectiveDisplayState, excludedDisplayIDs: Set<CGDirectDisplayID>, animated: Bool = false) {
+    /// The gamma table one monitor should show.
+    func tables(for display: DisplayDescriptor, state: EffectiveDisplayState, profiles: [String: DisplayProfile]) -> GammaTransferTables {
+        let profile = profiles[display.key] ?? DisplayProfile()
+        let look = profile.look(
+            mainKelvin: state.kelvin,
+            mainBrightnessPercent: state.brightnessPercent,
+            paused: state.isEffectivelyPaused
+        )
+        if !look.isFiltered {
+            return GammaRampBuilder.buildTables(kelvin: 6500, brightnessPercent: 100, capacity: 256)
+        }
+        return GammaRampBuilder.buildTables(
+            kelvin: look.kelvin,
+            brightnessPercent: look.brightnessPercent,
+            inverted: state.invertsColors,
+            grayscalePaper: state.usesGrayscale,
+            gammaFixer: state.gammaFixer,
+            capacity: 256
+        )
+    }
+
+    func apply(state: EffectiveDisplayState, profiles: [String: DisplayProfile], animated: Bool = false) {
         refreshDisplays()
 
         if state.isEffectivelyPaused {
@@ -101,7 +176,7 @@ final class DisplayGammaEngine {
             } else {
                 lastAppliedStatus = "Paused — Calibrated 6500K / 100%"
             }
-            DisplayOverlayController.shared.updateOverlays(state: state, excludedDisplayIDs: excludedDisplayIDs)
+            DisplayOverlayController.shared.updateOverlays(state: state, profiles: profiles)
             return
         }
 
@@ -115,18 +190,18 @@ final class DisplayGammaEngine {
         )
 
         if animated && !isSimulationMode {
-            beginCrossfade(from: lastTables, to: tables, state: state, excludedDisplayIDs: excludedDisplayIDs)
+            beginCrossfade(from: lastTables, to: tables, state: state, profiles: profiles)
             return
         }
 
-        commitTables(tables, state: state, excludedDisplayIDs: excludedDisplayIDs)
+        commitTables(tables, state: state, profiles: profiles)
     }
 
     private func beginCrossfade(
         from: GammaTransferTables,
         to: GammaTransferTables,
         state: EffectiveDisplayState,
-        excludedDisplayIDs: Set<CGDirectDisplayID>
+        profiles: [String: DisplayProfile]
     ) {
         crossfadeTask?.cancel()
         crossfadeTask = Task { @MainActor in
@@ -139,7 +214,7 @@ final class DisplayGammaEngine {
                 commitTables(
                     blended,
                     state: state,
-                    excludedDisplayIDs: excludedDisplayIDs,
+                    profiles: profiles,
                     updateStatus: step == steps
                 )
                 if step < steps {
@@ -164,15 +239,16 @@ final class DisplayGammaEngine {
     private func commitTables(
         _ tables: GammaTransferTables,
         state: EffectiveDisplayState,
-        excludedDisplayIDs: Set<CGDirectDisplayID>,
+        profiles: [String: DisplayProfile],
         updateStatus: Bool = true
     ) {
         lastTables = tables
 
         if !isSimulationMode {
-            let neutral = GammaRampBuilder.buildTables(kelvin: 6500, brightnessPercent: 100, capacity: 256)
             for display in connectedDisplays {
-                let useTable = excludedDisplayIDs.contains(display.id) ? neutral : tables
+                // The main look cross-fades. A custom monitor lands on its own table.
+                let follows = (profiles[display.key]?.mode ?? .follow) == .follow
+                let useTable = follows ? tables : self.tables(for: display, state: state, profiles: profiles)
                 var r = useTable.red
                 var g = useTable.green
                 var b = useTable.blue
@@ -181,9 +257,11 @@ final class DisplayGammaEngine {
         }
 
         if updateStatus {
-            lastAppliedStatus = "\(state.preset.title) (\(state.phase.title)) · \(state.kelvin)K · \(state.brightnessPercent)%"
+            let custom = connectedDisplays.filter { (profiles[$0.key]?.mode ?? .follow) != .follow }.count
+            let desk = custom == 0 ? "" : " · \(custom) custom"
+            lastAppliedStatus = "\(state.preset.title) (\(state.phase.title)) · \(state.kelvin)K · \(state.brightnessPercent)%\(desk)"
         }
-        DisplayOverlayController.shared.updateOverlays(state: state, excludedDisplayIDs: excludedDisplayIDs)
+        DisplayOverlayController.shared.updateOverlays(state: state, profiles: profiles)
     }
 
     func restoreSystemCalibration() {
@@ -204,7 +282,7 @@ final class DisplayOverlayController {
 
     private init() {}
 
-    func updateOverlays(state: EffectiveDisplayState, excludedDisplayIDs: Set<CGDirectDisplayID>) {
+    func updateOverlays(state: EffectiveDisplayState, profiles: [String: DisplayProfile]) {
         // Never cover the screen during automated window snapshots or self-tests.
         if DisplayGammaEngine.shared.isSimulationMode || state.isEffectivelyPaused {
             hideAll()
@@ -222,7 +300,8 @@ final class DisplayOverlayController {
                 continue
             }
             let displayID = CGDirectDisplayID(num.uint32Value)
-            if excludedDisplayIDs.contains(displayID) {
+            let key = DisplayIdentity.key(for: displayID, screen: screen)
+            if (profiles[key]?.mode ?? .follow) == .off {
                 windowsByDisplay[displayID]?.orderOut(nil)
                 continue
             }

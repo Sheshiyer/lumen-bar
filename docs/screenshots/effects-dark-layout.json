@@ -2,7 +2,7 @@
   "probes" : [
     {
       "area" : "diagnostics",
-      "height" : 630.84033203125,
+      "height" : 688.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "diagnostics",
@@ -11,8 +11,18 @@
       "y" : 52
     },
     {
+      "area" : "displays",
+      "height" : 589,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "displays",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
       "area" : "effects",
-      "height" : 410.84033203125,
+      "height" : 410.239501953125,
       "inset" : 20,
       "kind" : "area",
       "name" : "effects",
@@ -23,7 +33,7 @@
     {
       "area" : "effects",
       "edge" : "lead",
-      "height" : 186.420166015625,
+      "height" : 186.079833984375,
       "inset" : 0,
       "kind" : "probe",
       "name" : "overlay-pigments",
@@ -34,17 +44,17 @@
     {
       "area" : "effects",
       "edge" : "lead",
-      "height" : 168.420166015625,
+      "height" : 168.15966796875,
       "inset" : 0,
       "kind" : "probe",
       "name" : "vignette-effects",
       "width" : 856,
       "x" : 264,
-      "y" : 274.420166015625
+      "y" : 274.079833984375
     },
     {
       "area" : "eyerest",
-      "height" : 578.420166015625,
+      "height" : 578.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "eyerest",
@@ -54,7 +64,7 @@
     },
     {
       "area" : "presets",
-      "height" : 1326.5,
+      "height" : 1327.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -64,7 +74,7 @@
     },
     {
       "area" : "schedule",
-      "height" : 673.29541015625,
+      "height" : 674.61474609375,
       "inset" : 20,
       "kind" : "area",
       "name" : "schedule",

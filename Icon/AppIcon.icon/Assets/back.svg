@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <circle cx="512" cy="512" r="360" fill="#1F122B" opacity="0.88"/>
-  <path d="M180 620 Q512 520 844 620 L844 880 L180 880 Z" fill="#FFB347" opacity="0.45"/>
+  <circle cx="512" cy="512" r="380" fill="#1A1218" opacity="0.9"/>
+  <path d="M120 760 Q512 620 904 760 L904 980 L120 980 Z" fill="#FF8A3D" opacity="0.55"/>
 </svg>

@@ -39,6 +39,10 @@ struct SavedFilterState: Codable, Equatable {
     var launchAtLoginEnabled: Bool = false
     var showMenuBarText: Bool = true
     var useSolarSchedule: Bool = false
+    /// Optional so stores written before these fields existed still decode.
+    var soundCuesEnabled: Bool? = true
+    /// Per-monitor choices, keyed by a stable display identity.
+    var displayProfiles: [String: DisplayProfile]? = [:]
     var updatedAt: Date = .now
 }
 
@@ -78,6 +82,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
     case presets
     case schedule
     case effects
+    case displays
     case eyerest
     case diagnostics
 
@@ -88,6 +93,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .presets: "Presets & Modes"
         case .schedule: "Light & Schedule"
         case .effects: "Overlay & Effects"
+        case .displays: "Displays"
         case .eyerest: "Eye Rest & Pausers"
         case .diagnostics: "Display & Advanced"
         }
@@ -98,8 +104,9 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .presets: "Modes, presets, live status"
         case .schedule: "Day, night & sleep curve"
         case .effects: "Overlays, vignette, LUT effects"
+        case .displays: "Per-monitor Kelvin and brightness"
         case .eyerest: "Break timer & app pausers"
-        case .diagnostics: "LUT curve, displays, REA ledger"
+        case .diagnostics: "LUT curve and engine ledger"
         }
     }
 
@@ -108,6 +115,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .presets: "sparkles.tv.fill"
         case .schedule: "sun.and.horizon.fill"
         case .effects: "paintpalette.fill"
+        case .displays: "display.2"
         case .eyerest: "eye.circle.fill"
         case .diagnostics: "waveform.path.ecg.rectangle.fill"
         }
@@ -203,8 +211,9 @@ final class AppModel {
     var overrideGrayscale: Bool = false
     var forceOverlayOnAllModes: Bool = false
 
-    // Multi-Monitor Exclusion
-    var excludedDisplayIDs: Set<CGDirectDisplayID> = []
+    // Per-monitor looks, keyed by a stable display identity.
+    var displayProfiles: [String: DisplayProfile] = [:]
+    var soundCuesEnabled: Bool = true
 
     // Eye Rest Timer & App Pausers
     var restTimerEnabled: Bool = true
@@ -248,6 +257,7 @@ final class AppModel {
         }
         applyCurrentDisplayState()
         setupSystemHooks()
+        Self.sharedSoundEnabled = soundCuesEnabled
     }
 
     // MARK: - Computed Specification & Effective Output
@@ -442,6 +452,7 @@ final class AppModel {
         manualKelvin = spec.night.kelvin
         manualBrightness = spec.night.brightnessPercent
         saveAndApply()
+        SoundCues.shared.play(.preset)
     }
 
     func selectTier(_ newTier: ProtectionTier) {
@@ -556,12 +567,32 @@ final class AppModel {
         saveAndApply()
     }
 
-    func toggleDisplayExclusion(_ displayID: CGDirectDisplayID) {
-        if excludedDisplayIDs.contains(displayID) {
-            excludedDisplayIDs.remove(displayID)
-        } else {
-            excludedDisplayIDs.insert(displayID)
+    func profile(for display: DisplayDescriptor) -> DisplayProfile {
+        displayProfiles[display.key] ?? DisplayProfile()
+    }
+
+    func setDisplayMode(_ display: DisplayDescriptor, mode: DisplayFilterMode) {
+        var profile = profile(for: display)
+        profile.mode = mode
+        if mode == .custom && displayProfiles[display.key] == nil {
+            profile.kelvin = effectiveState.kelvin
+            profile.brightnessPercent = effectiveState.brightnessPercent
         }
+        displayProfiles[display.key] = profile
+        applyCurrentDisplayState()
+    }
+
+    func setDisplayLook(_ display: DisplayDescriptor, kelvin: Int, brightnessPercent: Int) {
+        displayProfiles[display.key] = DisplayProfile(
+            mode: .custom,
+            kelvin: kelvin,
+            brightnessPercent: brightnessPercent
+        )
+        applyCurrentDisplayState()
+    }
+
+    func resetDisplay(_ display: DisplayDescriptor) {
+        displayProfiles.removeValue(forKey: display.key)
         applyCurrentDisplayState()
     }
 
@@ -663,8 +694,11 @@ final class AppModel {
             launchAtLoginEnabled: launchAtLoginEnabled,
             showMenuBarText: showMenuBarText,
             useSolarSchedule: useSolarSchedule,
+            soundCuesEnabled: soundCuesEnabled,
+            displayProfiles: displayProfiles,
             updatedAt: .now
         )
+        Self.sharedSoundEnabled = soundCuesEnabled
         let payload = PersistentStorePayload(state: state, pauseRules: pauseRules)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -677,7 +711,7 @@ final class AppModel {
     func applyCurrentDisplayState() {
         DisplayGammaEngine.shared.apply(
             state: effectiveState,
-            excludedDisplayIDs: excludedDisplayIDs,
+            profiles: displayProfiles,
             animated: true
         )
     }
@@ -717,6 +751,9 @@ final class AppModel {
             launchAtLoginEnabled = saved.launchAtLoginEnabled
             showMenuBarText = saved.showMenuBarText
             useSolarSchedule = saved.useSolarSchedule
+            soundCuesEnabled = saved.soundCuesEnabled ?? true
+            displayProfiles = saved.displayProfiles ?? [:]
+            Self.sharedSoundEnabled = soundCuesEnabled
             remainingWorkSeconds = max(1, saved.restWorkMinutes) * 60
             pauseRules = payload.pauseRules
         } else {
@@ -755,6 +792,16 @@ final class AppModel {
             }
         }
 
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.applyCurrentDisplayState()
+            }
+        }
+
         guard !DisplayGammaEngine.shared.isSimulationMode else { return }
         tickTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
@@ -777,11 +824,13 @@ final class AppModel {
                 remainingWorkSeconds -= 1
             } else {
                 if isOnBreakReminder {
+                    SoundCues.shared.play(.breakEnd)
                     dismissBreakOverlay()
                 } else {
                     isOnBreakReminder = true
                     isShowingBreakOverlay = true
                     remainingWorkSeconds = max(5, restBreakSeconds)
+                    SoundCues.shared.play(.breakStart)
                 }
             }
         }

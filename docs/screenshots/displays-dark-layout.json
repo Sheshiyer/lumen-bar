@@ -1,0 +1,101 @@
+{
+  "probes" : [
+    {
+      "area" : "diagnostics",
+      "height" : 688.079833984375,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "diagnostics",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "displays",
+      "height" : 589,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "displays",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "displays",
+      "edge" : "lead",
+      "height" : 270,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "desk-map",
+      "width" : 856,
+      "x" : 264,
+      "y" : 72
+    },
+    {
+      "area" : "displays",
+      "edge" : "lead",
+      "height" : 125,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "display-1",
+      "width" : 856,
+      "x" : 264,
+      "y" : 358
+    },
+    {
+      "area" : "displays",
+      "edge" : "lead",
+      "height" : 122,
+      "inset" : 0,
+      "kind" : "probe",
+      "name" : "display-2",
+      "width" : 856,
+      "x" : 264,
+      "y" : 499
+    },
+    {
+      "area" : "effects",
+      "height" : 410.239501953125,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "effects",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "eyerest",
+      "height" : 578.079833984375,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "eyerest",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "presets",
+      "height" : 1327.079833984375,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "presets",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    },
+    {
+      "area" : "schedule",
+      "height" : 674.61474609375,
+      "inset" : 20,
+      "kind" : "area",
+      "name" : "schedule",
+      "width" : 896,
+      "x" : 244,
+      "y" : 52
+    }
+  ],
+  "window" : {
+    "height" : 760,
+    "width" : 1140
+  }
+}

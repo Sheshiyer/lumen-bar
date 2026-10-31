@@ -46,16 +46,22 @@ if [[ -x "$lsregister" ]]; then
   "$lsregister" -f -R -trusted "$app" 2>/dev/null || true
 fi
 
-if mkdir -p "$HOME/Applications" 2>/dev/null && [[ -w "$HOME/Applications" ]]; then
+install_app="$app"
+if mkdir -p /Applications 2>/dev/null && [[ -w /Applications ]]; then
+  rm -rf "/Applications/$name.app" 2>/dev/null || true
+  cp -R "$app" "/Applications/$name.app" 2>/dev/null || true
+  install_app="/Applications/$name.app"
+elif mkdir -p "$HOME/Applications" 2>/dev/null && [[ -w "$HOME/Applications" ]]; then
   rm -rf "$HOME/Applications/$name.app" 2>/dev/null || true
   cp -R "$app" "$HOME/Applications/$name.app" 2>/dev/null || true
-  if [[ -x "$lsregister" ]]; then
-    "$lsregister" -f -R -trusted "$HOME/Applications/$name.app" 2>/dev/null || true
-  fi
+  install_app="$HOME/Applications/$name.app"
+fi
+if [[ -x "$lsregister" && -d "$install_app" ]]; then
+  "$lsregister" -f -R -trusted "$install_app" 2>/dev/null || true
 fi
 
 if [[ " $* " == *" --open "* ]]; then
   osascript -e "quit app \"$name\"" 2>/dev/null || true
   sleep 0.5
-  open "$app"
+  open "$install_app"
 fi

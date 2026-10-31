@@ -8,7 +8,8 @@
 <key>CFBundleIconFile</key><string>AppIcon</string>
 <key>CFBundleIconName</key><string>AppIcon</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>1.1</string>
+<key>CFBundleShortVersionString</key><string>1.2</string>
+<key>NSHumanReadableCopyright</key><string>© Thoughtseed Private Limited</string>
 <key>CFBundleVersion</key><string>__BUILD__</string>
 <key>LSMinimumSystemVersion</key><string>26.0</string>
 <key>LSApplicationCategoryType</key><string>public.app-category.healthcare-fitness</string>

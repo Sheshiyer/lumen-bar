@@ -22,6 +22,8 @@ struct ContentView: View {
                             LightAndSchedulePage()
                         case .effects:
                             OverlayAndEffectsPage()
+                        case .displays:
+                            DisplaysPage()
                         case .eyerest:
                             EyeRestAndPausersPage()
                         case .diagnostics:

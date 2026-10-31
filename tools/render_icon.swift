@@ -30,59 +30,52 @@ func renderIcon(size: Int) -> CGImage {
     ctx.addPath(squirclePath)
     ctx.clip()
 
-    // Warm dusk-to-midnight circadian gradient
+    // Graphite night, warming to ember at the horizon.
     let bgColors = [
-        CGColor(srgbRed: 0.11, green: 0.08, blue: 0.22, alpha: 1.0),
-        CGColor(srgbRed: 0.42, green: 0.14, blue: 0.24, alpha: 1.0),
-        CGColor(srgbRed: 0.96, green: 0.44, blue: 0.11, alpha: 1.0)
+        CGColor(srgbRed: 0.07, green: 0.06, blue: 0.09, alpha: 1.0),
+        CGColor(srgbRed: 0.16, green: 0.10, blue: 0.14, alpha: 1.0),
+        CGColor(srgbRed: 0.55, green: 0.24, blue: 0.10, alpha: 1.0)
     ] as CFArray
-    let bgLocations: [CGFloat] = [0.0, 0.48, 1.0]
+    let bgLocations: [CGFloat] = [0.0, 0.55, 1.0]
     if let grad = CGGradient(colorsSpace: colorSpace, colors: bgColors, locations: bgLocations) {
         ctx.drawLinearGradient(
             grad,
-            start: CGPoint(x: 512, y: 940),
-            end: CGPoint(x: 512, y: 84),
+            start: CGPoint(x: 512, y: 960),
+            end: CGPoint(x: 512, y: 60),
             options: []
         )
     }
 
-    // Radial amber glow around the sun
-    let glowColors = [
-        CGColor(srgbRed: 1.0, green: 0.85, blue: 0.45, alpha: 0.72),
-        CGColor(srgbRed: 1.0, green: 0.52, blue: 0.12, alpha: 0.0)
-    ] as CFArray
-    if let radial = CGGradient(colorsSpace: colorSpace, colors: glowColors, locations: [0.0, 1.0]) {
-        ctx.drawRadialGradient(
-            radial,
-            startCenter: CGPoint(x: 512, y: 540),
-            startRadius: 20,
-            endCenter: CGPoint(x: 512, y: 540),
-            endRadius: 340,
-            options: []
-        )
-    }
+    // Two monitors: the main one warm, the second cooler, so the mark reads as a desk.
+    func monitor(_ rect: CGRect, warm: Bool) {
+        let body = CGPath(roundedRect: rect, cornerWidth: 34, cornerHeight: 34, transform: nil)
+        ctx.setFillColor(CGColor(srgbRed: 0.05, green: 0.04, blue: 0.06, alpha: 0.9))
+        ctx.addPath(body)
+        ctx.fillPath()
 
-    // Sun disc
-    ctx.setFillColor(CGColor(srgbRed: 1.0, green: 0.95, blue: 0.82, alpha: 1.0))
-    ctx.fillEllipse(in: CGRect(x: 512 - 148, y: 556 - 148, width: 296, height: 296))
+        let glass = rect.insetBy(dx: 16, dy: 16)
+        let glassPath = CGPath(roundedRect: glass, cornerWidth: 18, cornerHeight: 18, transform: nil)
+        let tone: [CGColor] = warm
+            ? [CGColor(srgbRed: 1.0, green: 0.62, blue: 0.28, alpha: 1),
+               CGColor(srgbRed: 1.0, green: 0.86, blue: 0.55, alpha: 1)]
+            : [CGColor(srgbRed: 0.35, green: 0.62, blue: 0.85, alpha: 1),
+               CGColor(srgbRed: 0.95, green: 0.9, blue: 0.78, alpha: 1)]
+        ctx.saveGState()
+        ctx.addPath(glassPath)
+        ctx.clip()
+        if let fill = CGGradient(colorsSpace: colorSpace, colors: tone as CFArray, locations: [0, 1]) {
+            ctx.drawLinearGradient(fill, start: CGPoint(x: glass.minX, y: glass.midY), end: CGPoint(x: glass.maxX, y: glass.midY), options: [])
+        }
+        ctx.restoreGState()
 
-    // Crescent eclipse overlay inside sun disc
-    ctx.setFillColor(CGColor(srgbRed: 0.20, green: 0.10, blue: 0.26, alpha: 0.86))
-    ctx.fillEllipse(in: CGRect(x: 556 - 116, y: 590 - 116, width: 232, height: 232))
-
-    // Horizon wave bars (Circadian LUT waves)
-    let waveY: [(CGFloat, CGFloat, CGFloat)] = [
-        (360, 320, 1.0),
-        (284, 240, 0.82),
-        (212, 160, 0.62)
-    ]
-    for (y, halfW, alpha) in waveY {
-        let barRect = CGRect(x: 512 - halfW, y: y, width: halfW * 2, height: 34)
-        let barPath = CGPath(roundedRect: barRect, cornerWidth: 17, cornerHeight: 17, transform: nil)
-        ctx.setFillColor(CGColor(srgbRed: 1.0, green: 0.92, blue: 0.76, alpha: alpha))
-        ctx.addPath(barPath)
+        let stand = CGRect(x: rect.midX - 34, y: rect.minY - 26, width: 68, height: 14)
+        ctx.setFillColor(CGColor(srgbRed: 1.0, green: 0.93, blue: 0.82, alpha: 0.85))
+        ctx.addPath(CGPath(roundedRect: stand, cornerWidth: 7, cornerHeight: 7, transform: nil))
         ctx.fillPath()
     }
+
+    monitor(CGRect(x: 250, y: 470, width: 430, height: 300), warm: true)
+    monitor(CGRect(x: 560, y: 560, width: 250, height: 176), warm: false)
 
     ctx.restoreGState()
 

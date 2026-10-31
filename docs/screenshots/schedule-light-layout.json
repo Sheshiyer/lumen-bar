@@ -2,7 +2,7 @@
   "probes" : [
     {
       "area" : "presets",
-      "height" : 1326.5,
+      "height" : 1327.079833984375,
       "inset" : 20,
       "kind" : "area",
       "name" : "presets",
@@ -12,7 +12,7 @@
     },
     {
       "area" : "schedule",
-      "height" : 673.29541015625,
+      "height" : 674.61474609375,
       "inset" : 20,
       "kind" : "area",
       "name" : "schedule",
@@ -23,7 +23,7 @@
     {
       "area" : "schedule",
       "edge" : "lead",
-      "height" : 279.875244140625,
+      "height" : 280.375244140625,
       "inset" : 0,
       "kind" : "probe",
       "name" : "circadian-chart",
@@ -34,13 +34,13 @@
     {
       "area" : "schedule",
       "edge" : "lead",
-      "height" : 189.420166015625,
+      "height" : 190.239501953125,
       "inset" : 0,
       "kind" : "probe",
       "name" : "schedule-sliders",
       "width" : 856,
       "x" : 264,
-      "y" : 367.875244140625
+      "y" : 368.375244140625
     },
     {
       "area" : "schedule",
@@ -51,7 +51,7 @@
       "name" : "custom-phase-sliders",
       "width" : 856,
       "x" : 264,
-      "y" : 573.29541015625
+      "y" : 574.61474609375
     }
   ],
   "window" : {

@@ -22,7 +22,7 @@ struct PresetsHomePage: View {
                             .frame(width: 240, height: 136)
 
                         VStack(alignment: .leading, spacing: Space.md) {
-                            Text("Circadian display control")
+                            Text("Your light, on every display")
                                 .font(LumenTypography.heroTitle)
                             LumenStatusRow(state: st)
 
