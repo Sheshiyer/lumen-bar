@@ -1,0 +1,8 @@
+node_modules/
+.hyperframes/
+renders/
+build/
+review/
+out/
+*.aiff
+*.wav

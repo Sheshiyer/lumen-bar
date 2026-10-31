@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #141218; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "SF Pro Display", "Inter", system-ui, sans-serif; color: #fff3d6; }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .scene-inner { position: absolute; inset: 0; }
+      .kicker { font-size: 28px; letter-spacing: 0.34em; text-transform: uppercase; color: #ffb347; font-weight: 600; }
+      h2 { font-size: 72px; line-height: 1.02; font-weight: 650; letter-spacing: -0.025em; }
+      .sub { font-size: 28px; line-height: 1.4; color: #d9cbb0; }
+      .chip { display: inline-block; padding: 11px 24px; border-radius: 999px; border: 1px solid rgba(255, 243, 214, 0.22); font-size: 28px; background: rgba(255, 243, 214, 0.04); }
+      .chip.on { background: #ff8a3d; color: #2a1408; border-color: #ff8a3d; font-weight: 650; }
+      .win { background: #1b1720; border-radius: 16px; box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 243, 214, 0.08); overflow: hidden; }
+      .win img { display: block; width: 100%; height: auto; }
+      .dots { display: flex; gap: 8px; padding: 14px 16px; background: #221d27; }
+      .dots i { width: 12px; height: 12px; border-radius: 50%; background: #3c3444; display: block; }
+      .dots i:first-child { background: #ff8a3d; }
+      .card { border: 1px solid rgba(255, 243, 214, 0.16); border-radius: 20px; background: #1b1720; padding: 32px 34px; }
+      .card b { display: block; font-size: 36px; margin: 0 0 8px; }
+      .card span { font-size: 28px; color: #d9cbb0; line-height: 1.35; }
+      .key { font-family: "SF Mono", ui-monospace, monospace; font-size: 26px; padding: 8px 16px; border-radius: 10px; background: #2a2430; border: 1px solid rgba(255, 243, 214, 0.18); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="explainer" data-start="0" data-duration="69.6" data-width="1920" data-height="1080">
+
+      <div id="sweep" class="clip" data-start="0" data-duration="69.6" data-track-index="0" style="z-index: 1">
+        <div style="position: absolute; left: 120px; right: 120px; bottom: 60px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
+        <div id="sweep-dot" style="position: absolute; left: 106px; bottom: 50px; width: 28px; height: 28px; border-radius: 50%; background: #fff3d6; box-shadow: 0 0 24px #ffb347"></div>
+      </div>
+
+      <!-- problem -->
+      <section id="s-problem" class="clip" data-start="0" data-duration="4.59" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" id="prob-bg" style="background: radial-gradient(circle at 70% 40%, #2a3c66, #0c0e16 70%)">
+          <div style="position: absolute; left: 140px; top: 300px; display: flex; flex-direction: column; gap: 26px">
+            <div class="kicker" id="p-k">The problem</div>
+            <h2 id="p-t" style="max-width: 1100px">At night, a bright screen<br />is still noon.</h2>
+          </div>
+        </div>
+      </section>
+
+      <!-- fix -->
+      <section id="s-fix" class="clip" data-start="4.59" data-duration="7.3" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; padding: 0 150px; gap: 36px">
+          <div class="kicker" id="f-k">The fix</div>
+          <h2 id="f-t" style="font-size: 64px">Hardware gamma.<br />10000K down to deep amber.</h2>
+          <div id="f-bar" style="width: 1200px; height: 22px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
+          <div class="sub" id="f-s">A native filter. Smooth cross-fades between looks. 0K to 10000K.</div>
+        </div>
+      </section>
+
+      <!-- modes -->
+      <section id="s-modes" class="clip" data-start="11.89" data-duration="10.61" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; gap: 60px; padding: 0 100px">
+          <div style="flex: 0 0 520px; display: flex; flex-direction: column; gap: 26px">
+            <div class="kicker" id="mo-k">Modes</div>
+            <div class="card" id="mo-1"><b>Automatic</b><span>A day, night, and sleep curve that moves with the clock.</span></div>
+            <div class="card" id="mo-2"><b>Manual</b><span>Hold the look you chose, whatever the hour.</span></div>
+            <div class="card" id="mo-3"><b>Paused</b><span>Neutral again: 15 minutes, 1 hour, or until morning.</span></div>
+          </div>
+          <div class="win" id="mo-win" style="flex: 1">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/schedule-dark.png" alt="LumenBar light and schedule" />
+          </div>
+        </div>
+      </section>
+
+      <!-- presets -->
+      <section id="s-presets" class="clip" data-start="22.5" data-duration="7.12" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; padding: 0 120px; gap: 36px">
+          <div>
+            <div class="kicker" id="pr-k">Presets</div>
+            <h2 id="pr-t" style="font-size: 60px; margin-top: 14px">Eleven presets. Max or Gentle.</h2>
+          </div>
+          <div id="pr-grid" style="display: flex; flex-wrap: wrap; gap: 14px; max-width: 1560px">
+            <span class="chip on">Health</span><span class="chip">Sleep</span><span class="chip">Reading</span>
+            <span class="chip">Programming</span><span class="chip">Biohacker</span><span class="chip">Sunglasses</span>
+            <span class="chip">Dark</span><span class="chip">Movie</span><span class="chip">Overlay</span>
+            <span class="chip">Gaming</span><span class="chip">Custom</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- schedule + effects -->
+      <section id="s-schedule" class="clip" data-start="29.63" data-duration="7.97" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; gap: 60px; padding: 0 100px">
+          <div class="win" id="sc-win" style="flex: 1.3">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/effects-dark.png" alt="LumenBar overlay and effects" />
+          </div>
+          <div style="flex: 0 0 560px; display: flex; flex-direction: column; gap: 24px">
+            <div class="kicker" id="sc-k">Schedule and effects</div>
+            <h2 id="sc-t" style="font-size: 50px">A solar estimate.<br />No location needed.</h2>
+            <div class="sub" id="sc-s">Tint, dark vignette, or E-Ink grayscale for reading. The day previews as one curve.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- multi-monitor -->
+      <section id="s-displays" class="clip" data-start="37.6" data-duration="10.2" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; gap: 60px; padding: 0 100px">
+          <div style="flex: 0 0 560px; display: flex; flex-direction: column; gap: 24px">
+            <div class="kicker" id="di-k">New this release</div>
+            <h2 id="di-t" style="font-size: 54px">A multi-monitor desk.</h2>
+            <div class="sub" id="di-s">Follow the main look, turn a display off, or give it its own Kelvin and brightness. Plug one in, and it re-applies.</div>
+          </div>
+          <div class="win" id="di-win" style="flex: 1">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/diagnostics-dark.png" alt="LumenBar display and advanced" />
+          </div>
+        </div>
+      </section>
+
+      <!-- eye rest -->
+      <section id="s-rest" class="clip" data-start="47.8" data-duration="7.9" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; gap: 60px; padding: 0 100px">
+          <div class="win" id="re-win" style="flex: 1.2">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/eyerest-dark.png" alt="LumenBar eye rest and pausers" />
+          </div>
+          <div style="flex: 0 0 560px; display: flex; flex-direction: column; gap: 24px">
+            <div class="kicker" id="re-k">Eye rest</div>
+            <h2 id="re-t" style="font-size: 52px">20-20-20, full screen.</h2>
+            <div class="sub" id="re-s">A quiet sound cue when the break starts. Color-critical apps auto-pause the filter.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- menu bar -->
+      <section id="s-menu" class="clip" data-start="55.7" data-duration="7.14" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 180px; gap: 34px">
+          <div class="kicker" id="me-k">Always there</div>
+          <h2 id="me-t" style="font-size: 60px">Live Kelvin, in the menu bar.</h2>
+          <div id="me-keys" style="display: flex; gap: 40px">
+            <div><span class="key">⌃ ⌥ ⌘ P</span><div class="sub" style="margin-top: 12px">Pause</div></div>
+            <div><span class="key">⌃ ⌥ ⌘ M</span><div class="sub" style="margin-top: 12px">Cycle preset</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- privacy + CTA -->
+      <section id="s-cta" class="clip" data-start="62.84" data-duration="6.73" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px; text-align: center">
+          <div id="c-words" style="display: flex; gap: 18px">
+            <span class="chip">No account</span><span class="chip">No cloud</span><span class="chip">No telemetry</span>
+          </div>
+          <h2 id="c-t" style="font-size: 92px">LumenBar</h2>
+          <div class="sub" id="c-s" style="font-size: 34px">for macOS</div>
+          <div id="c-bar" style="width: 420px; height: 12px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#sweep-dot", { x: 0 }, { x: 1666, duration: 69.6, ease: "none" }, 0);
+
+      const rise = (sel, at) =>
+        tl.fromTo(sel, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, at);
+
+      // problem: the harsh noon light cools into the warm ground
+      tl.fromTo("#p-k", { opacity: 0.6, y: 10 }, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }, 0);
+      tl.fromTo("#p-t", { opacity: 0.85, y: 14 }, { opacity: 1, y: 0, duration: 1.4, ease: "power2.out" }, 0);
+      tl.to("#prob-bg", { background: "radial-gradient(circle at 70% 40%, #4a2a18, #141218 70%)", duration: 3.2, ease: "power1.inOut" }, 1.2);
+
+      rise("#f-k", 4.85);
+      rise("#f-t", 5.1);
+      tl.fromTo("#f-bar", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 2.4, ease: "power2.inOut" }, 5.6);
+      rise("#f-s", 6.4);
+
+      rise("#mo-k", 12.15);
+      ["#mo-1", "#mo-2", "#mo-3"].forEach((id, i) => rise(id, 12.5 + i * 1.1));
+      tl.fromTo("#mo-win", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 13.2);
+      tl.to("#mo-win", { y: -26, duration: 8.4, ease: "none" }, 14.2);
+
+      rise("#pr-k", 22.75);
+      rise("#pr-t", 23.0);
+      tl.fromTo("#pr-grid .chip", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.07, ease: "power3.out" }, 23.5);
+
+      tl.fromTo("#sc-win", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 29.9);
+      rise("#sc-k", 30.2);
+      rise("#sc-t", 30.45);
+      rise("#sc-s", 31.0);
+
+      rise("#di-k", 37.85);
+      rise("#di-t", 38.1);
+      rise("#di-s", 38.6);
+      tl.fromTo("#di-win", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 38.4);
+
+      tl.fromTo("#re-win", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 48.05);
+      rise("#re-k", 48.3);
+      rise("#re-t", 48.55);
+      rise("#re-s", 49.1);
+
+      rise("#me-k", 55.95);
+      rise("#me-t", 56.2);
+      tl.fromTo("#me-keys > div", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.3, ease: "power3.out" }, 56.8);
+
+      tl.fromTo("#c-words .chip", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.2, ease: "power3.out" }, 63.1);
+      rise("#c-t", 63.9);
+      rise("#c-s", 64.3);
+      tl.fromTo("#c-bar", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 64.6);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["explainer"] = tl;
+    </script>
+  </body>
+</html>

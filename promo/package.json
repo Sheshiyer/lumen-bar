@@ -1,0 +1,10 @@
+{
+  "name": "lumenbar-promo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "audio": "python3 scripts/make_films.py",
+    "check": "cd onboarding && npx --yes hyperframes@0.8.223 check && cd ../explainer && npx --yes hyperframes@0.8.223 check",
+    "render": "zsh scripts/render.sh"
+  }
+}

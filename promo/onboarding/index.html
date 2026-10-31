@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #141218; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "SF Pro Display", "Inter", system-ui, sans-serif; color: #fff3d6; }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .scene-inner { position: absolute; inset: 0; }
+      .kicker { font-size: 28px; letter-spacing: 0.34em; text-transform: uppercase; color: #ffb347; font-weight: 600; }
+      h2 { font-size: 78px; line-height: 1.02; font-weight: 650; letter-spacing: -0.025em; }
+      .sub { font-size: 30px; line-height: 1.35; color: #d9cbb0; font-weight: 400; }
+      .chip { display: inline-block; padding: 12px 26px; border-radius: 999px; border: 1px solid rgba(255, 243, 214, 0.22); font-size: 30px; font-weight: 500; background: rgba(255, 243, 214, 0.04); }
+      .chip.on { background: #ff8a3d; color: #2a1408; border-color: #ff8a3d; font-weight: 650; }
+      .win { background: #1b1720; border-radius: 16px; box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 243, 214, 0.08); overflow: hidden; }
+      .win img { display: block; width: 100%; height: auto; }
+      .dots { display: flex; gap: 8px; padding: 14px 16px; background: #221d27; }
+      .dots i { width: 12px; height: 12px; border-radius: 50%; background: #3c3444; display: block; }
+      .dots i:first-child { background: #ff8a3d; }
+      .bar { height: 10px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff 0%, #ffb347 55%, #ff5a3d 100%); }
+      .monitor { border: 1px solid rgba(255, 243, 214, 0.16); border-radius: 18px; background: #1b1720; padding: 22px 26px 26px; width: 430px; }
+      .monitor .screen { height: 210px; border-radius: 10px; margin-bottom: 18px; }
+      .monitor b { display: block; font-size: 28px; margin-bottom: 4px; }
+      .monitor span { font-size: 28px; color: #d9cbb0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="onboarding" data-start="0" data-duration="40.9" data-width="1920" data-height="1080">
+
+      <!-- kelvin sweep that runs the whole film -->
+      <div id="sweep" class="clip" data-start="0" data-duration="40.9" data-track-index="0" style="z-index: 1">
+        <div id="sweep-bar" style="position: absolute; left: 120px; right: 120px; bottom: 64px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
+        <div id="sweep-dot" style="position: absolute; left: 106px; bottom: 54px; width: 28px; height: 28px; border-radius: 50%; background: #fff3d6; box-shadow: 0 0 24px #ffb347"></div>
+      </div>
+
+      <!-- 1 hello -->
+      <section id="s-hello" class="clip" data-start="0" data-duration="4.77" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; padding: 0 160px; gap: 34px">
+          <div class="kicker" id="h-kicker">LumenBar</div>
+          <h2 id="h-title">Good evening.<br />Your screens can rest too.</h2>
+          <div class="bar" id="h-bar" style="width: 640px"></div>
+        </div>
+      </section>
+
+      <!-- 2 modes -->
+      <section id="s-modes" class="clip" data-start="4.77" data-duration="9.91" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; padding: 0 110px; gap: 70px">
+          <div style="flex: 0 0 560px; display: flex; flex-direction: column; gap: 30px">
+            <div class="kicker">What it does tonight</div>
+            <h2 style="font-size: 64px">Three modes.<br />One menu bar.</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+              <span class="chip on" id="m-auto">Automatic</span>
+              <span class="chip" id="m-manual">Manual</span>
+              <span class="chip" id="m-paused">Paused · 15m · 1h · until morning</span>
+            </div>
+          </div>
+          <div class="win" id="m-win" style="flex: 1">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/presets-dark.png" alt="LumenBar presets and modes" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 presets -->
+      <section id="s-presets" class="clip" data-start="14.67" data-duration="7.45" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; padding: 0 120px; gap: 40px">
+          <div>
+            <div class="kicker">Pick a preset</div>
+            <h2 style="font-size: 64px; margin-top: 16px">Eleven looks. Max or Gentle.</h2>
+          </div>
+          <div id="p-grid" style="display: flex; flex-wrap: wrap; gap: 16px; max-width: 1500px">
+            <span class="chip on">Health</span><span class="chip">Sleep</span><span class="chip">Reading</span>
+            <span class="chip">Programming</span><span class="chip">Biohacker</span><span class="chip">Sunglasses</span>
+            <span class="chip">Dark</span><span class="chip">Movie</span><span class="chip">Overlay</span>
+            <span class="chip">Gaming</span><span class="chip">Custom</span>
+          </div>
+          <div class="sub">Hardware gamma, 0K to 10000K, with smooth cross-fades.</div>
+        </div>
+      </section>
+
+      <!-- 4 displays -->
+      <section id="s-displays" class="clip" data-start="22.12" data-duration="8.53" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; padding: 0 110px; gap: 42px">
+          <div>
+            <div class="kicker">Your displays</div>
+            <h2 style="font-size: 60px; margin-top: 16px">Each monitor, its own look.</h2>
+          </div>
+          <div id="d-row" style="display: flex; gap: 28px">
+            <div class="monitor"><div class="screen" style="background: linear-gradient(160deg, #ffb347, #ff8a3d)"></div><b>Main display</b><span>Main look · 3400K</span></div>
+            <div class="monitor"><div class="screen" style="background: #100e12"></div><b>Display 2</b><span>Filter off</span></div>
+            <div class="monitor"><div class="screen" style="background: linear-gradient(160deg, #8fb4ff, #5b6cff)"></div><b>Display 3</b><span>Own look · 5600K</span></div>
+          </div>
+          <div class="sub">Plug a monitor in, and LumenBar re-applies.</div>
+        </div>
+      </section>
+
+      <!-- 5 eye rest + done -->
+      <section id="s-set" class="clip" data-start="30.65" data-duration="10.26" data-track-index="1" style="z-index: 2">
+        <div class="scene-inner" style="display: flex; align-items: center; padding: 0 120px; gap: 80px">
+          <div style="flex: 0 0 640px; display: flex; flex-direction: column; gap: 28px">
+            <div class="kicker">Eye rest</div>
+            <h2 style="font-size: 62px">20-20-20.<br />Then you are set.</h2>
+            <div class="sub">A full-screen break, a quiet sound cue, and everything stays on this Mac. No account, no cloud, no telemetry.</div>
+          </div>
+          <div class="win" id="s-win" style="flex: 1">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <img src="assets/shots/eyerest-dark.png" alt="LumenBar eye rest" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo("#sweep-dot", { x: 0 }, { x: 1666, duration: 40.9, ease: "none" }, 0);
+
+      const rise = (sel, at) =>
+        tl.fromTo(sel, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, at);
+
+      tl.fromTo("#h-kicker", { opacity: 0.6, y: 10 }, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }, 0);
+      tl.fromTo("#h-title", { opacity: 0.85, y: 14 }, { opacity: 1, y: 0, duration: 1.4, ease: "power2.out" }, 0);
+      tl.fromTo("#h-bar", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 1.1);
+
+      rise("#s-modes .kicker", 5.0);
+      rise("#s-modes h2", 5.2);
+      ["#m-auto", "#m-manual", "#m-paused"].forEach((id, i) => rise(id, 5.7 + i * 0.9));
+      tl.fromTo("#m-win", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 6.2);
+      tl.to("#m-win", { y: -30, duration: 7.5, ease: "none" }, 7.2);
+
+      rise("#s-presets .kicker", 14.9);
+      rise("#s-presets h2", 15.1);
+      tl.fromTo("#p-grid .chip", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power3.out" }, 15.6);
+      rise("#s-presets .sub", 17.2);
+
+      rise("#s-displays .kicker", 22.4);
+      rise("#s-displays h2", 22.6);
+      tl.fromTo("#d-row .monitor", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.25, ease: "power3.out" }, 23.2);
+      rise("#s-displays .sub", 24.6);
+
+      rise("#s-set .kicker", 30.9);
+      rise("#s-set h2", 31.1);
+      rise("#s-set .sub", 31.6);
+      tl.fromTo("#s-win", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, 32.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["onboarding"] = tl;
+    </script>
+  </body>
+</html>
