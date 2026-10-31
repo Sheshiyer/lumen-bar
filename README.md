@@ -60,7 +60,7 @@ Never point tests or snapshots at your real store in `~/Library/Application Supp
 
 ## Design
 
-Premium-dark native UI: system materials, **Graphite** default accent (changeable in Settings → Appearance), kelvin phase strips on preset tiles, and a presets **command center** (live preview, recommended preset, gallery, collapsible adjust and verify). See `Sources/LumenBar/UI/DesignTokens.swift` and `CLAUDE.md` for contributor rules.
+Premium-dark native UI: system materials, **Lumen Ember** default accent (changeable in Settings → Appearance), kelvin phase strips on preset tiles, and a presets **command center** (live preview, recommended preset, gallery, collapsible adjust and verify). See `Sources/LumenBar/UI/DesignTokens.swift` and `CLAUDE.md` for contributor rules.
 
 ## License
 

@@ -252,6 +252,9 @@ private struct OnboardingStepThreeSystemSetup: View {
             Toggle("Enable 20-20-20 Eye Rest Reminders (Every 20 min for 20 sec)", isOn: $model.restTimerEnabled)
                 .onChange(of: model.restTimerEnabled) { _, _ in model.saveAndApply() }
 
+            Toggle("Play Quiet Sound Cues for Breaks & Presets", isOn: $model.soundCuesEnabled)
+                .onChange(of: model.soundCuesEnabled) { _, _ in model.saveAndApply() }
+
             VStack(alignment: .leading, spacing: Space.xs) {
                 Text("System-Wide Global Shortcuts (Active Anywhere)")
                     .font(.subheadline.weight(.semibold))

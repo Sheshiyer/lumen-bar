@@ -430,6 +430,7 @@ final class AppModel {
         isShowingBreakOverlay = false
         isOnBreakReminder = false
         remainingWorkSeconds = max(1, restWorkMinutes) * 60
+        SoundCues.shared.play(.breakEnd)
     }
 
     // MARK: - User Actions
@@ -579,7 +580,7 @@ final class AppModel {
             profile.brightnessPercent = effectiveState.brightnessPercent
         }
         displayProfiles[display.key] = profile
-        applyCurrentDisplayState()
+        saveAndApply()
     }
 
     func setDisplayLook(_ display: DisplayDescriptor, kelvin: Int, brightnessPercent: Int) {
@@ -588,12 +589,12 @@ final class AppModel {
             kelvin: kelvin,
             brightnessPercent: brightnessPercent
         )
-        applyCurrentDisplayState()
+        saveAndApply()
     }
 
     func resetDisplay(_ display: DisplayDescriptor) {
         displayProfiles.removeValue(forKey: display.key)
-        applyCurrentDisplayState()
+        saveAndApply()
     }
 
     func addPauseRule(appName: String, bundleID: String, category: String = "Color-Critical") {
@@ -630,6 +631,7 @@ final class AppModel {
         isOnBreakReminder = true
         isShowingBreakOverlay = true
         remainingWorkSeconds = max(5, restBreakSeconds)
+        SoundCues.shared.play(.breakStart)
     }
 
     func handleURL(_ url: URL) {
@@ -824,7 +826,6 @@ final class AppModel {
                 remainingWorkSeconds -= 1
             } else {
                 if isOnBreakReminder {
-                    SoundCues.shared.play(.breakEnd)
                     dismissBreakOverlay()
                 } else {
                     isOnBreakReminder = true

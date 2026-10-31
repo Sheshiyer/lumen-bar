@@ -32,6 +32,7 @@ struct Theme: Identifiable, Hashable {
 
     static let all: [Theme] = [
         Theme(id: "system", name: "System", shades: nil),
+        Theme(id: "lumen", name: "Lumen Ember", shades: .init(light: 0xFFD08A, base: 0xD96D1F, deep: 0x9D4210)),
         Theme(id: "blue", name: "Blue", shades: .init(light: 0x7CC0FF, base: 0x0A84FF, deep: 0x0064D2)),
         Theme(id: "indigo", name: "Indigo", shades: .init(light: 0xA5ADFF, base: 0x5E6AD2, deep: 0x4650B8)),
         Theme(id: "violet", name: "Violet", shades: .init(light: 0xB9A6FF, base: 0x7B5CFF, deep: 0x6342E6)),
@@ -53,7 +54,7 @@ final class ThemeStore {
 
     /// The accent the app ships with. Keep "system", so the app follows the
     /// accent people chose for their Mac.
-    static let defaultID = "graphite"
+    static let defaultID = "lumen"
 
     /// The app's brand color, or nil. Like Apple's own apps, the brand shows
     /// only while the Mac's accent is Multicolor (System Settings >

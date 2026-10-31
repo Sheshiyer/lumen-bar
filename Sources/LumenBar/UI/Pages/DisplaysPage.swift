@@ -21,7 +21,13 @@ struct DisplaysPage: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
-                    DeskMap(displays: displays, profiles: model.displayProfiles, paused: model.effectiveState.isEffectivelyPaused)
+                    DeskMap(
+                        displays: displays,
+                        profiles: model.displayProfiles,
+                        mainKelvin: model.effectiveState.kelvin,
+                        mainBrightnessPercent: model.effectiveState.brightnessPercent,
+                        paused: model.effectiveState.isEffectivelyPaused
+                    )
                         .frame(height: 168)
                 }
             }
@@ -39,6 +45,8 @@ struct DisplaysPage: View {
 private struct DeskMap: View {
     let displays: [DisplayDescriptor]
     let profiles: [String: DisplayProfile]
+    let mainKelvin: Int
+    let mainBrightnessPercent: Int
     let paused: Bool
 
     var body: some View {
@@ -56,10 +64,9 @@ private struct DeskMap: View {
 
             ZStack(alignment: .topLeading) {
                 ForEach(displays) { display in
-                    // The map shows each monitor's own choice. Follow reads as the shared warm look.
                     let look = (profiles[display.key] ?? DisplayProfile()).look(
-                        mainKelvin: 3400,
-                        mainBrightnessPercent: 80,
+                        mainKelvin: mainKelvin,
+                        mainBrightnessPercent: mainBrightnessPercent,
                         paused: paused
                     )
                     let rect = CGRect(
