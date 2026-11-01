@@ -57,3 +57,9 @@ What would make the evening part of your day easier? I'd love to hear which look
 - Repository: https://github.com/Sheshiyer/lumen-bar
 - Download: https://github.com/Sheshiyer/lumen-bar/releases/latest/download/LumenBar-1.2.0.dmg
 - Explainer file for YouTube: https://github.com/Sheshiyer/lumen-bar/releases/download/v1.2.0/lumenbar-explainer.mp4
+
+## Draft status
+- YouTube explainer: private draft — https://youtu.be/4UiXj3t8mwM
+- Product Hunt: unscheduled draft — https://www.producthunt.com/products/lumenbar?launch=lumenbar
+- Next public action: set YouTube to public or unlisted, then schedule Product Hunt for 12:01 AM Pacific.
+- Product Hunt saved tags: Health & Fitness, Biohacking, GitHub. Replace GitHub with Menu Bar Apps or Productivity before scheduling.
