@@ -22,24 +22,10 @@ A bright screen at 11 PM still looks like noon to your eyes. LumenBar warms the 
 
 ## Watch it
 
-<table>
-<tr>
-<td width="50%" valign="top">
+<a href="https://github.com/Sheshiyer/lumen-bar/releases/download/v1.2.0/lumenbar-explainer.mp4"><img src="marketing/producthunt/video-poster.png" alt="Watch the LumenBar explainer"></a>
 
-**40-second tour**<br>
-What LumenBar does on the first night: modes, presets, displays, and breaks.<br>
-`promo/onboarding` · rendered with HyperFrames
-
-</td>
-<td width="50%" valign="top">
-
-**70-second explainer**<br>
-Why screen light at night matters and how each feature helps.<br>
-`promo/explainer` · rendered with HyperFrames
-
-</td>
-</tr>
-</table>
+- [70-second explainer](https://github.com/Sheshiyer/lumen-bar/releases/download/v1.2.0/lumenbar-explainer.mp4): why screen light at night matters and how each feature helps.
+- [40-second tour](https://github.com/Sheshiyer/lumen-bar/releases/download/v1.2.0/lumenbar-onboarding.mp4): what LumenBar does on your first night.
 
 ## What it does
 
