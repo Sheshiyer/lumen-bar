@@ -52,3 +52,8 @@ What would make the evening part of your day easier? I'd love to hear which look
 - [ ] Explainer is on YouTube and plays with sound off
 - [ ] Preview shows the hero still first
 - [ ] All makers have complete personal profiles
+
+## Live links (verified without signing in)
+- Repository: https://github.com/Sheshiyer/lumen-bar
+- Download: https://github.com/Sheshiyer/lumen-bar/releases/latest/download/LumenBar-1.2.0.dmg
+- Explainer file for YouTube: https://github.com/Sheshiyer/lumen-bar/releases/download/v1.2.0/lumenbar-explainer.mp4
