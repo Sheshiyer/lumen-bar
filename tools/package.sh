@@ -59,7 +59,7 @@ ln -s /Applications "$stage/Applications"
 hdiutil create -volname "$name $version" -srcfolder "$stage" -ov -format UDZO "dist/$bundle.dmg" >/dev/null
 
 if [[ -n "$developer_id" ]]; then
-  python3 "$here/tools/run-with-timeout.py" --seconds 120 -- codesign --force --timestamp --sign "$developer_id" "dist/$bundle.dmg"
+  python3 "$here/tools/run-with-timeout.py" --seconds 300 -- codesign --force --timestamp --sign "$developer_id" "dist/$bundle.dmg"
 fi
 
 if $notarize; then

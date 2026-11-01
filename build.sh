@@ -52,7 +52,7 @@ xattr -cr "$app" 2>/dev/null || true
 # Ad-hoc signatures cannot carry a timestamp, so only real identities request one.
 sign_flags=(--force --options runtime)
 [[ "$identity" == "-" ]] || sign_flags+=(--timestamp)
-if ! sign_out=$(python3 "$here/tools/run-with-timeout.py" --seconds 120 -- codesign "${sign_flags[@]}" --sign "$identity" "$app" 2>&1); then
+if ! sign_out=$(python3 "$here/tools/run-with-timeout.py" --seconds 300 -- codesign "${sign_flags[@]}" --sign "$identity" "$app" 2>&1); then
   print -r -- "$sign_out"
   echo "codesign failed"
   exit 1
