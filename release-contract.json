@@ -1,0 +1,24 @@
+{
+  "schema": "native-macos-release.contract.v1",
+  "product": "LumenBar",
+  "bundleId": "com.thoughtseed.lumenbar",
+  "repository": "Sheshiyer/lumen-bar",
+  "versionSource": "VERSION",
+  "baseRef": "origin/main",
+  "distribution": "developer-id",
+  "signingIdentity": "Developer ID Application",
+  "hardenedRuntime": true,
+  "secureTimestamp": true,
+  "notarization": "required",
+  "minimumSystem": "26.0",
+  "packageCommand": "tools/package.sh --notarize",
+  "verifyCommands": [
+    "swift test --scratch-path ~/Library/Developer/LumenBar/test-build",
+    "tools/selftest.sh",
+    "tools/grid-lint.sh",
+    "swift tools/check-layout.swift docs/screenshots/*-layout.json"
+  ],
+  "artifacts": ["LumenBar-1.2.0.zip", "LumenBar-1.2.0.dmg"],
+  "notesSkill": "app-store-changelog",
+  "updateChannel": "manual"
+}

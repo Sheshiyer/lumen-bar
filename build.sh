@@ -15,7 +15,12 @@ if [[ -z "$identity" ]]; then
 fi
 [[ -n "$identity" ]] || identity=-
 
-swift build --disable-sandbox -c $config --package-path "$here" --scratch-path "$scratch" 2>&1 | grep -E "error|warning|Build complete" | grep -v "^\[" | grep -v "org.swift.swiftpm" || true
+if ! build_out=$(swift build --disable-sandbox -c $config --package-path "$here" --scratch-path "$scratch" 2>&1); then
+  print -r -- "$build_out"
+  echo "build failed"
+  exit 1
+fi
+print -r -- "$build_out" | grep -E "error|warning|Build complete" | grep -v "^\[" | grep -v "org.swift.swiftpm" || true
 bin=$(find "$scratch" -type f -name "$name" -perm +111 | grep -i "$config" | head -1)
 [[ -n "$bin" && -x "$bin" ]] || bin="$scratch/$config/$name"
 [[ -x "$bin" ]] || { echo "build failed"; exit 1; }
@@ -25,7 +30,12 @@ mkdir -p "$here/dist"
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$bin" "$app/Contents/MacOS/$name"
-sed -e "s/__BUILD__/$(date +%Y%m%d%H%M)/" "$here/Info.plist.in" > "$app/Contents/Info.plist"
+version=$(tr -d '[:space:]' < "$here/VERSION")
+[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]] || { echo "VERSION must be semantic versioning"; exit 1; }
+commit=$(git -C "$here" rev-parse --short=12 HEAD 2>/dev/null || echo unknown)
+dirty=""
+[[ -z "$(git -C "$here" status --porcelain 2>/dev/null)" ]] || dirty="-dirty"
+sed -e "s/__VERSION__/$version/" -e "s/__BUILD__/$(date +%Y%m%d%H%M)/" -e "s/__GIT_COMMIT__/${commit}${dirty}/" "$here/Info.plist.in" > "$app/Contents/Info.plist"
 
 if [[ ! -f "$here/Resources/AppIcon.icns" || -n "$(find "$here/tools/render_icon.swift" -newer "$here/Resources/AppIcon.icns" 2>/dev/null | head -1)" ]]; then
   "$here/tools/make_icon.sh"
@@ -38,7 +48,16 @@ if [[ -f "$here/Resources/Assets.car" ]]; then
 fi
 
 xattr -cr "$app" 2>/dev/null || true
-codesign --force --sign "$identity" "$app" 2>&1 | grep -v "replacing existing signature" || true
+# Hardened runtime and a secure timestamp are required for public Developer ID distribution.
+# Ad-hoc signatures cannot carry a timestamp, so only real identities request one.
+sign_flags=(--force --options runtime)
+[[ "$identity" == "-" ]] || sign_flags+=(--timestamp)
+if ! sign_out=$(python3 "$here/tools/run-with-timeout.py" --seconds 120 -- codesign "${sign_flags[@]}" --sign "$identity" "$app" 2>&1); then
+  print -r -- "$sign_out"
+  echo "codesign failed"
+  exit 1
+fi
+print -r -- "$sign_out" | grep -v "replacing existing signature" || true
 echo "installed $app (signed: ${identity})"
 
 lsregister="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"

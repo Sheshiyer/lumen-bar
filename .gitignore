@@ -5,9 +5,15 @@ DerivedData/
 xcuserdata/
 .DS_Store
 .env*
+*.p8
+*.p12
+*.pem
+*.cer
+*.mobileprovision
 /shots/
 .research/
 .build-app/
 .build-check/
 .build-tests/
 dist/
+.local/

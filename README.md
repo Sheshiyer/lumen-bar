@@ -30,7 +30,7 @@ Native macOS app for circadian blue-light filtering, PWM-free software brightnes
 tools/package.sh    # dist/LumenBar-<version>.zip and .dmg, plus dist/SHA256SUMS
 ```
 
-`tools/package.sh` signs with the Developer ID when one is present. Add `--notarize` (with `APPLE_ID`, `APPLE_TEAM_ID`, and `APPLE_APP_PASSWORD` set) to notarize and staple, which is what a download needs before Gatekeeper opens it without a warning.
+`tools/package.sh` signs with the Developer ID when one is present. Add `--notarize` with `APPLE_API_KEY`, `APPLE_API_KEY_ID`, and `APPLE_API_ISSUER` set to notarize and staple. The key file stays on disk and is passed by path; the command never prints it.
 
 The app icon is compiled from `Icon/AppIcon.icon` via `tools/make_icon.sh`.
 
