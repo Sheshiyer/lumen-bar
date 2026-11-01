@@ -9,9 +9,9 @@ mkdir -p out build/video
 (cd onboarding && npx --yes hyperframes@0.8.223 render --fps 30 -o ../build/video/onboarding.mp4)
 (cd explainer && npx --yes hyperframes@0.8.223 render --fps 30 -o ../build/video/explainer.mp4)
 
-# The onboarding voice ends at ~39.1s; trim its music-only tail to a 39.9s delivery.
+# The onboarding voice ends at ~39.1s; trim its music-only tail to a 40.9s delivery.
 ffmpeg -y -v error -i build/video/onboarding.mp4 -i build/onboarding/mix.wav \
-  -map 0:v -map 1:a -t 39.9 -c:v copy -c:a aac -b:a 192k -movflags +faststart \
+  -map 0:v -map 1:a -t 40.9 -c:v copy -c:a aac -b:a 192k -movflags +faststart \
   out/lumenbar-onboarding.mp4
 ffmpeg -y -v error -i build/video/explainer.mp4 -i build/explainer/mix.wav \
   -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart \

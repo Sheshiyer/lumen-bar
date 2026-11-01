@@ -31,7 +31,7 @@ FILMS = {
         ("displays", "New: a multi-monitor desk. Each display can follow the main look, turn off, or keep its own Kelvin and brightness. Plug one in, and LumenBar re-applies."),
         ("rest", "A twenty-twenty-twenty timer covers the screen for a real break, with quiet sound cues. Color-critical apps auto-pause the filter."),
         ("menubar", "Live Kelvin in the menu bar. Control-option-command-P pauses. Control-option-command-M cycles presets."),
-        ("privacy", "No account. No cloud. No telemetry. LumenBar for macOS."),
+        ("privacy", "No account. No cloud. No telemetry. Download LumenBar free on GitHub."),
     ],
 }
 

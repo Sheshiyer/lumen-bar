@@ -27,9 +27,9 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="explainer" data-start="0" data-duration="69.6" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="explainer" data-start="0" data-duration="69.969" data-width="1920" data-height="1080">
 
-      <div id="sweep" class="clip" data-start="0" data-duration="69.6" data-track-index="0" style="z-index: 1">
+      <div id="sweep" class="clip" data-start="0" data-duration="69.969" data-track-index="0" style="z-index: 1">
         <div style="position: absolute; left: 120px; right: 120px; bottom: 60px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
         <div id="sweep-dot" style="position: absolute; left: 106px; bottom: 50px; width: 28px; height: 28px; border-radius: 50%; background: #fff3d6; box-shadow: 0 0 24px #ffb347"></div>
       </div>
@@ -111,7 +111,7 @@
           </div>
           <div class="win" id="di-win" style="flex: 1">
             <div class="dots"><i></i><i></i><i></i></div>
-            <img src="assets/shots/diagnostics-dark.png" alt="LumenBar display and advanced" />
+            <img src="assets/shots/displays-dark.png" alt="LumenBar displays desk" />
           </div>
         </div>
       </section>
@@ -144,13 +144,14 @@
       </section>
 
       <!-- privacy + CTA -->
-      <section id="s-cta" class="clip" data-start="62.84" data-duration="6.73" data-track-index="1" style="z-index: 2">
+      <section id="s-cta" class="clip" data-start="62.843" data-duration="7.126" data-track-index="1" style="z-index: 2">
         <div class="scene-inner" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px; text-align: center">
           <div id="c-words" style="display: flex; gap: 18px">
             <span class="chip">No account</span><span class="chip">No cloud</span><span class="chip">No telemetry</span>
           </div>
           <h2 id="c-t" style="font-size: 92px">LumenBar</h2>
-          <div class="sub" id="c-s" style="font-size: 34px">for macOS</div>
+          <div class="sub" id="c-s" style="font-size: 34px">Free for macOS 26 · Apple silicon</div>
+          <div class="chip" id="c-url" style="font-size: 30px">github.com/Sheshiyer/lumen-bar</div>
           <div id="c-bar" style="width: 420px; height: 12px; border-radius: 999px; background: linear-gradient(90deg, #8fb4ff, #ffb347 55%, #ff5a3d)"></div>
         </div>
       </section>
@@ -158,7 +159,7 @@
 
     <script>
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#sweep-dot", { x: 0 }, { x: 1666, duration: 69.6, ease: "none" }, 0);
+      tl.fromTo("#sweep-dot", { x: 0 }, { x: 1666, duration: 69.969, ease: "none" }, 0);
 
       const rise = (sel, at) =>
         tl.fromTo(sel, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" }, at);
@@ -204,6 +205,7 @@
       tl.fromTo("#c-words .chip", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.2, ease: "power3.out" }, 63.1);
       rise("#c-t", 63.9);
       rise("#c-s", 64.3);
+      rise("#c-url", 65.2);
       tl.fromTo("#c-bar", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 64.6);
 
       window.__timelines = window.__timelines || {};

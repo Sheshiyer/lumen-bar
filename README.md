@@ -1,71 +1,150 @@
-# LumenBar
+<div align="center">
+  <img src="Resources/AppIcon-preview.png" width="160" height="160" alt="LumenBar icon">
+  <h1>LumenBar</h1>
+  <p><strong>Warm your Mac for easier nights.</strong></p>
+  <p>A quiet menu bar app that shifts your screen toward warm light as the day ends, on every display you use.</p>
 
-Native macOS app for circadian blue-light filtering, PWM-free software brightness, and eye-comfort tooling. Everything runs locally on your Mac—no account, no cloud, no telemetry.
+  <a href="https://github.com/Sheshiyer/lumen-bar/releases/latest/download/LumenBar-1.2.0.dmg"><img src="https://img.shields.io/badge/Download-LumenBar%201.2.0-ff8a3d?style=for-the-badge&logo=apple&logoColor=white" alt="Download LumenBar"></a>
 
-![Presets homepage (light)](docs/screenshots/presets-light.png)
+  <p>
+    <img src="https://img.shields.io/badge/macOS-26%2B-1f1a24?style=flat-square" alt="macOS 26 or later">
+    <img src="https://img.shields.io/badge/Apple%20silicon-native-1f1a24?style=flat-square" alt="Apple silicon">
+    <img src="https://img.shields.io/badge/Notarized-by%20Apple-1f1a24?style=flat-square" alt="Notarized by Apple">
+    <img src="https://img.shields.io/badge/No%20account%20·%20no%20tracking-1f1a24?style=flat-square" alt="No account, no tracking">
+  </p>
+</div>
 
-## Features
+![LumenBar presets and modes](docs/screenshots/presets-dark.png)
 
-- **Three automation modes** — Automatic (day / night / sleep curve), Manual, and Paused, with **timed pause** (15 minutes, 1 hour, until tomorrow morning).
-- **Eleven presets** — Health, Sleep, Reading, Programming, Biohacker, Sunglasses, Dark, Movie, Overlay, Gaming, and Custom, each with **LumenBar Max** or **LumenBar Gentle** intensity profiles.
-- **Hardware gamma control** — 101-step Kelvin LUT (0K–10000K) applied via CoreGraphics transfer tables, with **smooth cross-fades** when switching looks.
-- **Overlays & effects** — Twelve color-therapy tints, dark vignette, LUT inversion, and E-Ink-style grayscale (Reading).
-- **Schedule** — Day, night, and sleep windows, 24-hour curve preview, optional **approximate solar schedule** from your time zone (no location permission).
-- **Eye rest** — 20-20-20 timer with a full-screen **break overlay**; auto-pause when color-critical apps are frontmost.
-- **Multi-monitor desk** — every display follows the main look, stays calibrated, or keeps its own Kelvin and brightness. The choice is remembered and reapplied when a monitor is plugged back in.
-- **Quiet sound cues** — a soft chime when a break starts and ends, and a short tick when a preset lands. Toggle in Settings → General.
-- **Menu bar & shortcuts** — Live Kelvin/brightness readout, favorite presets, global shortcuts (`⌃⌥⌘P` pause, `⌃⌥⌘M` cycle preset, arrows for temperature and brightness).
-- **Deep links** — `lumenbar://preset/health`, `lumenbar://mode/automatic`, `lumenbar://toggle-pause`, and related URLs.
+## Why LumenBar
 
-## Requirements
+A bright screen at 11 PM still looks like noon to your eyes. LumenBar warms the color of your display through the evening and into sleep, so late work feels softer. It runs entirely on your Mac. There is no account, no cloud, and nothing is sent anywhere.
 
-- macOS 26 (see `Package.swift`; builds may run on recent macOS 15+ with matching Xcode).
-- Xcode command-line tools / Xcode for `swift build` and code signing.
+## Watch it
 
-## Build & install
+<table>
+<tr>
+<td width="50%" valign="top">
 
-```bash
-./build.sh          # build, sign, install to dist/LumenBar.app and /Applications/LumenBar.app
-./build.sh --open   # same, then relaunch the app
-tools/package.sh    # dist/LumenBar-<version>.zip and .dmg, plus dist/SHA256SUMS
-```
+**40-second tour**<br>
+What LumenBar does on the first night: modes, presets, displays, and breaks.<br>
+`promo/onboarding` · rendered with HyperFrames
 
-`tools/package.sh` signs with the Developer ID when one is present. Add `--notarize` with `APPLE_API_KEY`, `APPLE_API_KEY_ID`, and `APPLE_API_ISSUER` set to notarize and staple. The key file stays on disk and is passed by path; the command never prints it.
+</td>
+<td width="50%" valign="top">
 
-The app icon is compiled from `Icon/AppIcon.icon` via `tools/make_icon.sh`.
+**70-second explainer**<br>
+Why screen light at night matters and how each feature helps.<br>
+`promo/explainer` · rendered with HyperFrames
 
-## Verify
+</td>
+</tr>
+</table>
 
-```bash
-swift test --scratch-path ~/Library/Developer/LumenBar/test-build
-tools/selftest.sh                    # needs APP_STORE under /tmp (script sets this)
-tools/snap.sh                        # refreshes docs/screenshots (needs APP_STORE)
-tools/grid-lint.sh
-swift tools/check-layout.swift docs/screenshots/*-layout.json
-```
+## What it does
 
-Never point tests or snapshots at your real store in `~/Library/Application Support/LumenBar/`.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-## Project layout
+### Follows your day
+Choose **Automatic** and LumenBar moves through day, night, and sleep light on its own. Pick **Manual** to hold a look, or **Pause** for 15 minutes, an hour, or until morning.
 
-| Path | Purpose |
-|------|---------|
-| `Sources/LumenBar/` | SwiftUI app (window, menu bar, onboarding, settings) |
-| `Sources/LumenBar/UI/` | Design tokens, shared components, sidebar pages |
-| `Sources/LumenBarKit/` | Presets, Kelvin LUT, gamma builder, circadian scheduler (no SwiftUI) |
-| `docs/BRIEF.md` | Product brief |
-| `docs/STORIES.md` | User stories and acceptance criteria |
-| `docs/screenshots/` | Light/dark UI snapshots and layout probes |
-| `docs/research/` | Blue-light filter and REA research notes |
+</td>
+<td width="50%" valign="top">
 
-## Design
+### Every monitor, its own light
+Each display can follow the main look, stay neutral, or keep its own warmth and brightness. Unplug a monitor and plug it back in, and it remembers.
 
-Premium-dark native UI: system materials, **Lumen Ember** default accent (changeable in Settings → Appearance), kelvin phase strips on preset tiles, and a presets **command center** (live preview, recommended preset, gallery, collapsible adjust and verify). See `Sources/LumenBar/UI/DesignTokens.swift` and `CLAUDE.md` for contributor rules.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### Eleven ready looks
+Health, Sleep, Reading, Programming, Movie, Gaming, and more, each in a stronger **Max** or softer **Gentle** version.
+
+</td>
+<td width="50%" valign="top">
+
+### Gentle breaks
+A 20-20-20 reminder covers the screen when it is time to look away, with a soft chime. Photo and video apps can pause the filter automatically.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### Your whole day at a glance
+See your light schedule as one curve. LumenBar estimates sunrise and sunset from your time zone, without asking for your location.
+
+</td>
+<td width="50%" valign="top">
+
+### Reading and focus tints
+Twelve color tints, a soft vignette, and a warm E-Ink paper look for long reading.
+
+</td>
+</tr>
+</table>
+
+![Every monitor, its own light](docs/screenshots/displays-dark.png)
+
+## Install
+
+1. [Download LumenBar 1.2.0](https://github.com/Sheshiyer/lumen-bar/releases/latest/download/LumenBar-1.2.0.dmg).
+2. Open the disk image and drag **LumenBar** to **Applications**.
+3. Open LumenBar. A short welcome walks you through your first setup.
+
+LumenBar is signed and notarized by Apple, so it opens without security warnings. To check your download, compare it with the SHA-256 values listed on the [release page](https://github.com/Sheshiyer/lumen-bar/releases/latest).
+
+**Requires** macOS 26 or later on a Mac with Apple silicon.
+
+## Everyday use
+
+| You want to | Do this |
+|---|---|
+| Pause or resume | Press `⌃⌥⌘P`, or click **Pause** in the menu bar |
+| Try the next look | Press `⌃⌥⌘M` |
+| Warmer or cooler | Press `⌃⌥⌘←` or `⌃⌥⌘→` |
+| Brighter or dimmer | Press `⌃⌥⌘↑` or `⌃⌥⌘↓` |
+| Change one monitor | Open **Displays** and choose Follow, Off, or Custom |
+| Turn off sounds | **Settings → General → Quiet Sound Cues** |
+
+## Questions
+
+**Will this change my photo or video colors?**
+Add color-critical apps under **Eye Rest & Pausers**. LumenBar returns to neutral while they are in front.
+
+**Does LumenBar collect anything?**
+No. Settings are saved in a file on your Mac. There are no accounts, analytics, or network requests.
+
+**How do I remove it?**
+Quit LumenBar from the menu bar, then move it from **Applications** to the Trash. Your screen returns to its normal colors when the app quits.
+
+## Privacy
+
+LumenBar runs offline. It does not use your location, contacts, camera, or microphone.
 
 ## License
 
-See repository license file if present; otherwise all rights reserved by the project owner.
+Free to download and use. The source is available for reading and personal builds. See [LICENSE](LICENSE).
 
-## Acknowledgments
+<details>
+<summary><strong>Build from source</strong></summary>
 
-Built with the [BAMA](https://github.com/daveebbelaar/bama) native Mac app workflow. Display research informed by [REA](https://github.com/morluto/rea) static analysis (ledger in **Display & Advanced** in the app).
+You need Xcode with Swift 6.2 or later.
+
+```bash
+git clone https://github.com/Sheshiyer/lumen-bar.git
+cd lumen-bar
+./build.sh --open
+```
+
+Run checks with `swift test --scratch-path ~/Library/Developer/LumenBar/test-build` and `tools/selftest.sh`. Release packaging and notarization steps live in `tools/package.sh` and `release-contract.json`.
+
+</details>
+
+<div align="center">
+  <sub>Made by <a href="https://thoughtseed.space">Thoughtseed</a>.</sub>
+</div>
