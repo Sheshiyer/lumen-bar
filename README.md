@@ -3,6 +3,7 @@
   <h1>LumenBar</h1>
   <p><strong>Warm your Mac for easier nights.</strong></p>
   <p>A quiet menu bar app that shifts your screen toward warm light as the day ends, on every display you use.</p>
+  <p><a href="https://lumenbar.thoughtseed.space">Official website</a></p>
 
   <a href="https://github.com/Sheshiyer/lumen-bar/releases/latest/download/LumenBar-1.2.0.dmg"><img src="https://img.shields.io/badge/Download-LumenBar%201.2.0-ff8a3d?style=for-the-badge&logo=apple&logoColor=white" alt="Download LumenBar"></a>
 
