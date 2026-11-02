@@ -18,3 +18,5 @@ xcuserdata/
 dist/
 .local/
 .wrangler/
+.playwright-cli/
+output/
