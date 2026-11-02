@@ -17,3 +17,6 @@ xcuserdata/
 .build-tests/
 dist/
 .local/
+.wrangler/
+.playwright-cli/
+output/
