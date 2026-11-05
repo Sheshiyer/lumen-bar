@@ -1,6 +1,6 @@
 # LumenBar on Product Hunt
 
-Post from your personal Product Hunt account. Schedule for 12:01 AM Pacific so the launch gets a full day.
+Post from your personal Product Hunt account. The live launch is scheduled for November 3, 2026 at 12:01 AM PST.
 
 ## Name
 LumenBar
@@ -12,7 +12,7 @@ Warm your Mac for easier nights
 LumenBar warms your Mac's screen through the evening and into sleep. Give every monitor its own light, take gentle 20-20-20 breaks, and pause for photo apps. Free, notarized, and fully offline. No account, no tracking.
 
 ## Links
-- Website: https://github.com/Sheshiyer/lumen-bar
+- Website: https://lumenbar.thoughtseed.space
 - Download: https://github.com/Sheshiyer/lumen-bar/releases/latest
 - Pricing: Free
 
